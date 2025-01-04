@@ -9,3 +9,8 @@ export const fetchNextPatient = async (): Promise<{
 
   return response.data;
 };
+
+export const getPatients = async () => {
+  const response = await axiosInstance.get("/patients");
+  return response.data;
+};

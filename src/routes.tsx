@@ -11,6 +11,7 @@ import theme from "./theme";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { Box } from "@mui/material";
+import PatientsPage from "./pages/PatientsPage";
 
 // Protected layout updated to use MUI styling
 // Updated ProtectedLayout component
@@ -68,6 +69,17 @@ const routes = createBrowserRouter([
       <ProtectedRoute>
         <ProtectedLayout>
           <DashboardPage />
+        </ProtectedLayout>
+      </ProtectedRoute>
+    ),
+    errorElement: <RouteErrorBoundary />,
+  },
+  {
+    path: "/patients",
+    element: (
+      <ProtectedRoute>
+        <ProtectedLayout>
+          <PatientsPage />
         </ProtectedLayout>
       </ProtectedRoute>
     ),

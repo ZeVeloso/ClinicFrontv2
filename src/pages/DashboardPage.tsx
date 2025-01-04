@@ -7,7 +7,6 @@ import {
   Typography,
   CircularProgress,
 } from "@mui/material";
-import { styled } from "@mui/system";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -16,11 +15,6 @@ import { getAppointments } from "../api/appointments";
 // Utilities for formatting dates
 const formatDate = (date: Date) => moment(date).format("Do MMMM YYYY");
 const formatTime = (date: Date) => moment(date).format("h:mm A");
-
-const Header = styled(Typography)(({ theme }) => ({
-  marginBottom: theme.spacing(2),
-  fontWeight: 600,
-}));
 
 // Component to display next appointment details
 function NextAppointmentCard({ appointment, loading, error }: any) {

@@ -1,5 +1,4 @@
 import HomeIcon from "@mui/icons-material/Home";
-import InfoIcon from "@mui/icons-material/Info";
 import ElderlyWomanIcon from "@mui/icons-material/ElderlyWoman";
 import EventIcon from "@mui/icons-material/Event";
 
