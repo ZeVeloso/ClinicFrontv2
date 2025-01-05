@@ -1,49 +1,69 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Box,
   Button,
-  TextField,
   Typography,
   Card,
   CircularProgress,
-  InputAdornment,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import AddIcon from "@mui/icons-material/Add";
-import { Edit, Delete } from "@mui/icons-material";
+import {
+  Add as AddIcon,
+  Delete as DeleteIcon,
+  Search as SearchIcon,
+  Person as PersonIcon,
+  Edit as EditIcon,
+} from "@mui/icons-material";
+import InputAdornment from "@mui/material/InputAdornment";
+import { useNavigate } from "react-router-dom";
 import GenericGrid from "../components/GenericGrid";
-import { getPatients } from "../api/patients";
+import PatientForm from "../components/PatientForm";
+import { getPatients, addPatient } from "../api/patients";
+import { calculateAge } from "../utils/calculateAge";
+import { formatDate } from "../utils/dateHelper";
 
 type Patient = {
-  id: number;
+  id: string;
   name: string;
-  age: number;
-  phone: string;
+  phone: number;
+  birth: string;
+  age?: string;
 };
 
-const PatientsPage = () => {
+const PatientsPage: React.FC = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const navigate = useNavigate();
 
-  const fetchPatients = async () => {
+  // Fetch patients from API
+  const fetchPatients = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
-      const response = await getPatients(); // Assuming getPatients returns { data: Patient[] }
-      setPatients(response.data);
-      setFilteredPatients(response.data);
+      const response = await getPatients();
+      const updatedPatients = response.data.map((patient: Patient) => ({
+        ...patient,
+        age: calculateAge(patient.birth),
+      }));
+      setPatients(updatedPatients);
+      setFilteredPatients(updatedPatients);
     } catch (err) {
       setError("Failed to fetch patients. Please try again later.");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchPatients();
-  }, []);
+  }, [fetchPatients]);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value.toLowerCase();
@@ -53,40 +73,94 @@ const PatientsPage = () => {
     );
   };
 
-  const handleRowAction = (id: number, action: string) => {
-    if (action === "manage") {
-      console.log(`Manage patient with ID: ${id}`);
-    } else if (action === "delete") {
-      console.log(`Delete patient with ID: ${id}`);
+  const handleDeletePatient = (id: string) => {
+    setPatients((prev) => prev.filter((patient) => patient.id !== id));
+  };
+
+  const handleEditPatient = (id: string) => {
+    navigate(`/patients/${id}`);
+  };
+
+  const handleAddPatient = async (values: {
+    name: string;
+    birth: string;
+    phone: string;
+    gender: string;
+    address: string;
+    job: string;
+  }) => {
+    try {
+      const newPatient = await addPatient({
+        name: values.name,
+        birth: values.birth,
+        phone: parseInt(values.phone),
+        gender: values.gender,
+        address: values.address,
+        job: values.job,
+      });
+      const age = calculateAge(newPatient.birthDate);
+      setPatients((prev) => [...prev, { ...newPatient, age }]);
+      setOpenDialog(false);
+    } catch (err) {
+      setError("Failed to add patient. Please try again.");
     }
   };
 
   const columns = [
-    { field: "id", headerName: "ID", width: 70 },
-    { field: "name", headerName: "Name", flex: 1 },
-    { field: "age", headerName: "Age", flex: 1 },
-    { field: "phone", headerName: "Phone", flex: 1 },
+    {
+      field: "name",
+      headerName: "Name",
+      flex: 1,
+      minWidth: 150,
+      renderCell: ({ row }: { row: Patient }) => (
+        <Box
+          sx={{ display: "flex", alignItems: "center", gap: 1, height: "100%" }}
+        >
+          <PersonIcon />
+          <Typography variant="body2">{row.name}</Typography>
+        </Box>
+      ),
+    },
+    {
+      field: "birth",
+      headerName: "Birth",
+      flex: 1,
+      minWidth: 100,
+    },
+    {
+      field: "age",
+      headerName: "Age",
+      flex: 1,
+      minWidth: 100,
+    },
+    {
+      field: "phone",
+      headerName: "Phone",
+      flex: 1,
+      minWidth: 150,
+    },
     {
       field: "actions",
       headerName: "Actions",
-      width: 200,
-      renderCell: (params: any) => (
+      flex: 0.5,
+      minWidth: 150,
+      renderCell: ({ row }: { row: Patient }) => (
         <>
           <Button
             variant="text"
             color="primary"
             size="small"
-            onClick={() => handleRowAction(params.row.id, "manage")}
+            onClick={() => handleEditPatient(row.id)}
           >
-            <Edit />
+            <EditIcon />
           </Button>
           <Button
             variant="text"
             color="error"
             size="small"
-            onClick={() => handleRowAction(params.row.id, "delete")}
+            onClick={() => handleDeletePatient(row.id)}
           >
-            <Delete />
+            <DeleteIcon />
           </Button>
         </>
       ),
@@ -96,30 +170,27 @@ const PatientsPage = () => {
   const rows = filteredPatients.map((patient) => ({
     id: patient.id,
     name: patient.name,
+    birth: formatDate(new Date(patient.birth)),
     age: patient.age,
     phone: patient.phone,
   }));
 
   return (
-    <Box sx={{ padding: 4, backgroundColor: "#f9f9f9", minHeight: "100vh" }}>
-      {/* Header */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 3,
-        }}
-      >
+    <Box sx={{ padding: 3, backgroundColor: "#f9f9f9" }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
         <Typography variant="h4">Patient Management</Typography>
-        <Button variant="contained" color="primary" startIcon={<AddIcon />}>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<AddIcon />}
+          onClick={() => setOpenDialog(true)}
+        >
           Add Patient
         </Button>
       </Box>
 
-      {/* Filters Card */}
-      <Card sx={{ marginBottom: 4, padding: 2 }}>
-        <Box sx={{ display: "flex", gap: 2 }}>
+      <Card sx={{ mb: 4, p: 2 }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", gap: 3 }}>
           <TextField
             label="Search by Name"
             variant="outlined"
@@ -136,30 +207,50 @@ const PatientsPage = () => {
             }}
           />
           <TextField
-            label="Phone Number"
+            label="Search by Phone"
             variant="outlined"
             fullWidth
             size="small"
+            value={searchQuery}
+            onChange={handleSearch}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
           />
         </Box>
       </Card>
 
-      {/* Patient Grid in Card */}
-      <Card sx={{ padding: 2 }}>
+      <Card
+        sx={{
+          p: 2,
+          overflowX: "auto",
+          whiteSpace: "nowrap",
+        }}
+      >
         {loading ? (
-          <CircularProgress sx={{ display: "block", margin: "20px auto" }} />
+          <CircularProgress sx={{ display: "block", mx: "auto" }} />
         ) : error ? (
-          <Typography
-            variant="body1"
-            color="error"
-            sx={{ textAlign: "center" }}
-          >
+          <Typography variant="body1" color="error" textAlign="center">
             {error}
           </Typography>
         ) : (
           <GenericGrid rows={rows} columns={columns} />
         )}
       </Card>
+
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+        <DialogTitle>Add Patient</DialogTitle>
+        <DialogContent>
+          <PatientForm
+            onSubmit={handleAddPatient}
+            onCancel={() => setOpenDialog(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };

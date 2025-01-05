@@ -4,32 +4,23 @@ import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 interface GenericGridProps {
   columns: GridColDef[];
   rows: GridRowsProp;
-  onRowAction?: (id: number, action: string) => void;
+  onRowAction?: (id: string, action: string) => void;
 }
 
-const GenericGrid: React.FC<GenericGridProps> = ({
-  columns,
-  rows,
-  onRowAction,
-}) => {
-  const handleRowAction = (id: number, action: string) => {
-    if (onRowAction) {
-      onRowAction(id, action);
-    }
-  };
-
+const GenericGrid: React.FC<GenericGridProps> = ({ columns, rows }) => {
   return (
     <DataGrid
       rows={rows}
       columns={columns}
+      autoHeight
       getRowClassName={(params) =>
         params.indexRelativeToCurrentPage % 2 === 0 ? "even" : "odd"
       }
       initialState={{
         pagination: { paginationModel: { pageSize: 20 } },
       }}
-      pageSizeOptions={[10, 20, 50]}
-      disableColumnResize
+      pageSizeOptions={[5, 10, 20, 50]}
+      density="compact"
       disableMultipleRowSelection
       disableRowSelectionOnClick
       slotProps={{
