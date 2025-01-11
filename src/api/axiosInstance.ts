@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:3000", // Update as needed
+  baseURL: "https://clinickend.onrender.com", // Update as needed
   withCredentials: true, // For refresh tokens in cookies
 });
 
@@ -26,7 +26,7 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
       try {
         const { data } = await axios.post(
-          "http://localhost:3000/auth/refresh",
+          "https://clinickend.onrender.com/auth/refresh",
           {},
           { withCredentials: true }
         );

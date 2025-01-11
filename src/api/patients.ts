@@ -1,4 +1,10 @@
 import axiosInstance from "./axiosInstance";
+import { Patient } from "../types/Patient";
+
+export const getPatients = async () => {
+  const response = await axiosInstance.get("/patients");
+  return response.data;
+};
 
 export const fetchNextPatient = async (): Promise<{
   id: string;
@@ -6,12 +12,11 @@ export const fetchNextPatient = async (): Promise<{
   details: string;
 }> => {
   const response = await axiosInstance.get("/patients");
-
   return response.data;
 };
 
-export const getPatients = async () => {
-  const response = await axiosInstance.get("/patients");
+export const getPatient = async (id: string) => {
+  const response = await axiosInstance.get(`/patients/${id}`);
   return response.data;
 };
 
@@ -29,4 +34,9 @@ export const addPatient = async (patientData: {
   } catch (error) {
     throw new Error("Error adding patient");
   }
+};
+
+export const updatePatient = async (id: string, updatedPatient: Patient) => {
+  const response = await axiosInstance.put(`/patients/${id}`, updatedPatient);
+  return response.data;
 };

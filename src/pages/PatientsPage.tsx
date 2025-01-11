@@ -25,13 +25,7 @@ import { getPatients, addPatient } from "../api/patients";
 import { calculateAge } from "../utils/calculateAge";
 import { formatDate } from "../utils/dateHelper";
 
-type Patient = {
-  id: string;
-  name: string;
-  phone: number;
-  birth: string;
-  age?: string;
-};
+import { Patient } from "../types/Patient";
 
 const PatientsPage: React.FC = () => {
   const [patients, setPatients] = useState<Patient[]>([]);

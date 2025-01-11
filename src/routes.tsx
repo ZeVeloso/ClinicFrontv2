@@ -12,7 +12,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { Box } from "@mui/material";
 import PatientsPage from "./pages/PatientsPage";
-
+import PatientPage from "./pages/PatientPage";
 // Protected layout updated to use MUI styling
 // Updated ProtectedLayout component
 const ProtectedLayout: React.FC<{ children: React.ReactNode }> = ({
@@ -81,6 +81,17 @@ const routes = createBrowserRouter([
       <ProtectedRoute>
         <ProtectedLayout>
           <PatientsPage />
+        </ProtectedLayout>
+      </ProtectedRoute>
+    ),
+    errorElement: <RouteErrorBoundary />,
+  },
+  {
+    path: "/patients/:id",
+    element: (
+      <ProtectedRoute>
+        <ProtectedLayout>
+          <PatientPage />
         </ProtectedLayout>
       </ProtectedRoute>
     ),
