@@ -14,7 +14,7 @@ import {
   getAppointmentsByPatientId,
   createAppointment,
 } from "../api/appointments";
-import { formatDate, formatDateTime } from "../utils/dateHelper";
+import { formatDateTime } from "../utils/dateHelper";
 import { Patient } from "../types/Patient";
 import { Appointment } from "../types/Appointment";
 
@@ -113,6 +113,7 @@ const PatientDetailsPage: React.FC = () => {
         <TextField
           fullWidth
           label="Birth Date"
+          type="date"
           value={patient.birth}
           onChange={(e) => handleFieldChange("birth", e.target.value)}
           onBlur={handleFieldBlur}

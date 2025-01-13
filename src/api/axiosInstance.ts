@@ -1,8 +1,10 @@
 import axios from "axios";
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 const axiosInstance = axios.create({
-  baseURL: "https://clinickend.onrender.com", // Update as needed
-  withCredentials: true, // For refresh tokens in cookies
+  baseURL: apiUrl,
+  withCredentials: true,
 });
 
 // Add request interceptor
@@ -26,7 +28,7 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
       try {
         const { data } = await axios.post(
-          "https://clinickend.onrender.com/auth/refresh",
+          apiUrl.concat("/auth/refresh"),
           {},
           { withCredentials: true }
         );
