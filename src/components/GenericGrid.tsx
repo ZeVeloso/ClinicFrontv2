@@ -1,21 +1,36 @@
 import * as React from "react";
-import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridColDef,
+  GridRowsProp,
+  DataGridProps,
+} from "@mui/x-data-grid";
 
 interface GenericGridProps {
   columns: GridColDef[];
   rows: GridRowsProp;
   onRowAction?: (id: string, action: string) => void;
+  gridProps?: Partial<DataGridProps>; // Allow additional DataGrid props
 }
 
-const GenericGrid: React.FC<GenericGridProps> = ({ columns, rows }) => {
+const GenericGrid: React.FC<GenericGridProps> = ({
+  columns,
+  rows,
+  onRowAction,
+  gridProps,
+}) => {
+  const getRowClassName = React.useCallback(
+    (params: { indexRelativeToCurrentPage: number }) =>
+      params.indexRelativeToCurrentPage % 2 === 0 ? "even" : "odd",
+    []
+  );
+
   return (
     <DataGrid
       rows={rows}
       columns={columns}
       autoHeight
-      getRowClassName={(params) =>
-        params.indexRelativeToCurrentPage % 2 === 0 ? "even" : "odd"
-      }
+      getRowClassName={getRowClassName}
       initialState={{
         pagination: { paginationModel: { pageSize: 20 } },
       }}
@@ -49,8 +64,15 @@ const GenericGrid: React.FC<GenericGridProps> = ({ columns, rows }) => {
           },
         },
       }}
+      {...gridProps} // Spread additional props for extendability
     />
   );
+};
+
+// Default props
+GenericGrid.defaultProps = {
+  onRowAction: undefined,
+  gridProps: {},
 };
 
 export default GenericGrid;

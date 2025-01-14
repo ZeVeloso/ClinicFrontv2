@@ -22,7 +22,7 @@ export const getPatient = async (id: string) => {
 
 export const addPatient = async (patientData: {
   name: string;
-  phone: number;
+  phone: string;
   birth: string;
   gender: string;
   job: string;

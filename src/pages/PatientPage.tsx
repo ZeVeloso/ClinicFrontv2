@@ -6,6 +6,9 @@ import {
   CircularProgress,
   TextField,
   Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
 } from "@mui/material";
 import { useParams } from "react-router-dom";
 import GenericGrid from "../components/GenericGrid";
@@ -17,6 +20,7 @@ import {
 import { formatDateTime } from "../utils/dateHelper";
 import { Patient } from "../types/Patient";
 import { Appointment } from "../types/Appointment";
+import AppointmentForm from "../components/AppointmentForm";
 
 const PatientDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -25,6 +29,7 @@ const PatientDetailsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editedFields, setEditedFields] = useState<Partial<Patient>>({});
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   const fetchPatient = useCallback(async () => {
     setLoading(true);
@@ -63,13 +68,26 @@ const PatientDetailsPage: React.FC = () => {
     }
   };
 
-  const handleAddAppointment = async () => {
+  const handleAddAppointmentClick = () => {
+    setIsFormOpen(true);
+  };
+
+  const handleFormSubmit = async (values: {
+    date: string;
+    motive: string;
+    obs: string;
+  }) => {
     try {
-      const newAppointment = await createAppointment(id!);
+      const newAppointment = await createAppointment(id!, values);
       setAppointments((prev) => [...prev, newAppointment]);
+      setIsFormOpen(false);
     } catch (err) {
       setError("Failed to create appointment. Please try again.");
     }
+  };
+
+  const handleFormCancel = () => {
+    setIsFormOpen(false);
   };
 
   if (loading) {
@@ -159,7 +177,7 @@ const PatientDetailsPage: React.FC = () => {
           <Button
             variant="contained"
             color="primary"
-            onClick={handleAddAppointment}
+            onClick={handleAddAppointmentClick}
           >
             Add Appointment
           </Button>
@@ -185,6 +203,16 @@ const PatientDetailsPage: React.FC = () => {
           <Typography>No appointments found for this patient.</Typography>
         )}
       </Card>
+
+      <Dialog open={isFormOpen} onClose={handleFormCancel}>
+        <DialogTitle>Add Appointment</DialogTitle>
+        <DialogContent>
+          <AppointmentForm
+            onSubmit={handleFormSubmit}
+            onCancel={handleFormCancel}
+          />
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };

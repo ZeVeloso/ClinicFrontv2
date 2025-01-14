@@ -87,7 +87,7 @@ const PatientsPage: React.FC = () => {
       const newPatient = await addPatient({
         name: values.name,
         birth: values.birth,
-        phone: parseInt(values.phone),
+        phone: values.phone,
         gender: values.gender,
         address: values.address,
         job: values.job,

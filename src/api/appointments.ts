@@ -24,16 +24,17 @@ export const getAppointmentsByPatientId = async (
   return response.data.data;
 };
 
-export const createAppointment = async (id: string) => {
-  const newAppointment = {
-    date: new Date().toISOString(),
-    motive: "Check-up1", // Example default value
-    status: "C",
-    obs: "",
-  };
+export const createAppointment = async (
+  id: string,
+  appointmentData: {
+    date: string;
+    motive: string;
+    obs: string;
+  }
+) => {
   const response = await axiosInstance.post(
     `/patients/${id}/appointments`,
-    newAppointment
+    appointmentData
   );
   return response.data.data;
 };
