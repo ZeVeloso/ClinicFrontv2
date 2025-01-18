@@ -14,7 +14,12 @@ interface AppointmentFormProps {
     motive?: string;
     obs?: string;
   };
-  onSubmit: (values: { date: string; motive: string; obs: string }) => void;
+  onSubmit: (values: {
+    date: string;
+    motive: string;
+    obs: string;
+    status: string;
+  }) => void;
   onCancel: () => void;
 }
 
@@ -53,6 +58,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
         date: dateTime,
         motive: formValues.motive.trim(),
         obs: formValues.obs.trim(),
+        status: "N",
       });
     }
   };

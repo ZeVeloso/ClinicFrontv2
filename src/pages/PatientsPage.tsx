@@ -10,6 +10,7 @@ import {
   DialogTitle,
   DialogContent,
 } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import {
   Add as AddIcon,
   Delete as DeleteIcon,
@@ -173,49 +174,55 @@ const PatientsPage: React.FC = () => {
     <Box sx={{ padding: 3, backgroundColor: "#f9f9f9" }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
         <Typography variant="h4">Patient Management</Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AddIcon />}
-          onClick={() => setOpenDialog(true)}
-        >
-          Add Patient
-        </Button>
       </Box>
 
       <Card sx={{ mb: 4, p: 2 }}>
-        <Box sx={{ display: "flex", justifyContent: "space-between", gap: 3 }}>
-          <TextField
-            label="Search by Name"
-            variant="outlined"
-            fullWidth
-            size="small"
-            value={searchQuery}
-            onChange={handleSearch}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
-          <TextField
-            label="Search by Phone"
-            variant="outlined"
-            fullWidth
-            size="small"
-            value={searchQuery}
-            onChange={handleSearch}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
-        </Box>
+        <Grid container spacing={2}>
+          <Grid size={{ xs: 12, md: 5.5 }}>
+            <TextField
+              label="Search by Name"
+              variant="outlined"
+              fullWidth
+              size="small"
+              value={searchQuery}
+              onChange={handleSearch}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, md: 5.5 }}>
+            <TextField
+              label="Search by Phone"
+              variant="outlined"
+              fullWidth
+              size="small"
+              value={searchQuery}
+              onChange={handleSearch}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, md: 1 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<AddIcon />}
+              onClick={() => setOpenDialog(true)}
+            >
+              Add Patient
+            </Button>
+          </Grid>
+        </Grid>
       </Card>
 
       <Card

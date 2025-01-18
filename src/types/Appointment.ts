@@ -5,6 +5,7 @@ export type Appointment = {
   patient?: Patient;
   date: string;
   motive: string;
+  cost?: number;
   status: string;
   obs: string;
 };

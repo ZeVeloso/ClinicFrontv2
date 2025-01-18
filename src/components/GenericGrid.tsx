@@ -69,10 +69,4 @@ const GenericGrid: React.FC<GenericGridProps> = ({
   );
 };
 
-// Default props
-GenericGrid.defaultProps = {
-  onRowAction: undefined,
-  gridProps: {},
-};
-
 export default GenericGrid;

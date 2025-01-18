@@ -1,5 +1,6 @@
 import axiosInstance from "./axiosInstance";
 import { Patient } from "../types/Patient";
+import { Appointment } from "../types/Appointment";
 
 export const getAppointments = async (): Promise<
   { id: string; obs: string; date: string }[]
@@ -37,4 +38,15 @@ export const createAppointment = async (
     appointmentData
   );
   return response.data.data;
+};
+
+export const updateAppointment = async (
+  id: string,
+  updatedAppointment: Appointment
+) => {
+  const response = await axiosInstance.put(
+    `/appointments/${id}`,
+    updatedAppointment
+  );
+  return response.data;
 };
