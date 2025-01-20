@@ -1,8 +1,10 @@
-export const calculateAge = (birthDate: string): string => {
-  const birth = new Date(birthDate);
+export const calculateAge = (birth: string): string => {
+  console.log(birth);
+  const birthDate = new Date(birth);
+  console.log(birth);
   const now = new Date();
-  const years = now.getFullYear() - birth.getFullYear();
-  const months = now.getMonth() - birth.getMonth() + years * 12;
+  const years = now.getFullYear() - birthDate.getFullYear();
+  const months = now.getMonth() - birthDate.getMonth() + years * 12;
   const totalYears = Math.floor(months / 12);
   const remainingMonths = months % 12;
 

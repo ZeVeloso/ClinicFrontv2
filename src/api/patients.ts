@@ -1,8 +1,20 @@
 import axiosInstance from "./axiosInstance";
 import { Patient } from "../types/Patient";
 
-export const getPatients = async () => {
-  const response = await axiosInstance.get("/patients");
+export const getPatients = async ({
+  name = "",
+  phone = "",
+  page = 1,
+  pageSize = 20,
+}: {
+  name?: string;
+  phone?: string;
+  page?: number;
+  pageSize?: number;
+}) => {
+  const response = await axiosInstance.get("/patients", {
+    params: { name, phone, page, pageSize },
+  });
   return response.data;
 };
 

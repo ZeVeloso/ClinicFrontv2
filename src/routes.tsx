@@ -59,11 +59,11 @@ const routes = createBrowserRouter([
     element: <LoginPage />,
     errorElement: <RouteErrorBoundary />,
   },
-  {
-    path: "/signup",
-    element: <SignupPage />,
-    errorElement: <RouteErrorBoundary />,
-  },
+  // {
+  //   path: "/signup",
+  //   element: <SignupPage />,
+  //   errorElement: <RouteErrorBoundary />,
+  // },
   {
     path: "/dashboard",
     element: (
