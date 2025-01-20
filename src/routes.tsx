@@ -3,7 +3,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 //import Navbar from "./components/Navbar/Navbar";
 import Navbar from "./components/SideMenu/NavBar";
-import SignupPage from "./pages/SignupPage";
+//import SignupPage from "./pages/SignupPage";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import RouteErrorBoundary from "./components/RouteErrorBoundary";

@@ -16,7 +16,6 @@ interface GenericGridProps {
 const GenericGrid: React.FC<GenericGridProps> = ({
   columns,
   rows,
-  onRowAction,
   gridProps,
 }) => {
   const getRowClassName = React.useCallback(
