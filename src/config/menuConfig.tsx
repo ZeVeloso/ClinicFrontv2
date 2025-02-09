@@ -1,6 +1,7 @@
 import HomeIcon from "@mui/icons-material/Home";
 import ElderlyWomanIcon from "@mui/icons-material/ElderlyWoman";
 import EventIcon from "@mui/icons-material/Event";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 
 import SettingsIcon from "@mui/icons-material/Settings";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
@@ -9,6 +10,7 @@ export const appMenuItems = [
   { label: "Home", link: "/", icon: <HomeIcon /> },
   { label: "Patients", link: "/patients", icon: <ElderlyWomanIcon /> },
   { label: "Appointments", link: "/appointments", icon: <EventIcon /> },
+  { label: "Management", link: "/management", icon: <ManageAccountsIcon /> },
 ];
 
 export const profileMenuItems = [

@@ -1,12 +1,19 @@
 import axiosInstance from "./axiosInstance";
-import { Patient } from "../types/Patient";
-import { Appointment } from "../types/Appointment";
+import { Patient } from "../features/patients/types";
+import { Appointment } from "../features/appointments/types";
 
-export const getAppointments = async (): Promise<
-  { id: string; obs: string; date: string }[]
-> => {
-  const response = await axiosInstance.get("/appointments");
-  return response.data.data;
+export const getAppointments = async ({
+  patient = "",
+  phone = "",
+  date = "",
+  status = "",
+  page = 1,
+  pageSize = 20,
+}) => {
+  const response = await axiosInstance.get("/appointments", {
+    params: { patient, phone, date, status, page, pageSize },
+  });
+  return response.data;
 };
 
 export const getAppointmentsByPatientId = async (
@@ -44,9 +51,10 @@ export const updateAppointment = async (
   id: string,
   updatedAppointment: Appointment
 ) => {
+  const { patient, ...appointmentData } = updatedAppointment;
   const response = await axiosInstance.put(
     `/appointments/${id}`,
-    updatedAppointment
+    appointmentData
   );
   return response.data;
 };

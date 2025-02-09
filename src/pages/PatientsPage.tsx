@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogContent,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import {
   Add as AddIcon,
   Delete as DeleteIcon,
@@ -20,59 +20,27 @@ import {
 } from "@mui/icons-material";
 import InputAdornment from "@mui/material/InputAdornment";
 import { useNavigate } from "react-router-dom";
-import GenericGrid from "../components/GenericGrid";
-import PatientForm from "../components/PatientForm";
-import { getPatients, addPatient } from "../api/patients";
-import { calculateAge } from "../utils/calculateAge";
+import GenericGrid from "../components/common/GenericGrid";
+import PatientForm from "../features/patients/components/PatientForm";
 import { formatDate } from "../utils/dateHelper";
-import { debounce } from "lodash";
-import { Patient } from "../types/Patient";
+import { usePatients } from "../features/patients/hooks/usePatients";
+import { Patient } from "../features/patients/types";
 
 const PatientsPage: React.FC = () => {
-  const [patients, setPatients] = useState<Patient[]>([]);
-  const [totalPatients, setTotalPatients] = useState<number>(0);
+  // local state for filtering, pagination, and dialog control
   const [filters, setFilters] = useState({ name: "", phone: "" });
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(20);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  // Fetch patients from API with filters
-  const fetchPatients = useCallback(
-    debounce(async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await getPatients({
-          name: filters.name,
-          phone: filters.phone,
-          page: page + 1,
-          pageSize,
-        });
-        const updatedPatients = response.data.map((patient: Patient) => ({
-          ...patient,
-          age: calculateAge(patient.birth),
-        }));
-        setPatients(updatedPatients);
-        setTotalPatients(response.total);
-      } catch (err) {
-        setError("Failed to fetch patients. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    }, 500),
-    [filters, page, pageSize]
-  );
-
-  useEffect(() => {
-    fetchPatients();
-  }, [fetchPatients]);
+  // use our custom hook to fetch patients based on filters and pagination
+  const { patients, totalPatients, loading, error, addNewPatient } =
+    usePatients(filters, page, pageSize);
 
   const handleFilterChange = (field: string, value: string) => {
     setFilters((prev) => ({ ...prev, [field]: value }));
-    setPage(0); // Reset to first page on filter change
+    setPage(0); // reset back to first page on filter change
   };
 
   const handlePaginationChange = (paginationModel: {
@@ -83,37 +51,19 @@ const PatientsPage: React.FC = () => {
     setPageSize(paginationModel.pageSize);
   };
 
+  // For deletion, you would normally call an API
   const handleDeletePatient = (id: string) => {
-    setPatients((prev) => prev.filter((patient) => patient.id !== id));
+    // This is just a placeholder. In a real scenario, call the delete API and refresh the list.
+    console.log("Delete patient", id);
   };
 
   const handleEditPatient = (id: string) => {
     navigate(`/patients/${id}`);
   };
 
-  const handleAddPatient = async (values: {
-    name: string;
-    birth: string;
-    phone: string;
-    gender: string;
-    address: string;
-    job: string;
-  }) => {
-    try {
-      const newPatient = await addPatient({
-        name: values.name,
-        birth: values.birth,
-        phone: values.phone,
-        gender: values.gender,
-        address: values.address,
-        job: values.job,
-      });
-      const age = calculateAge(newPatient.data.birth);
-      setPatients((prev) => [...prev, { ...newPatient.data, age }]);
-      setOpenDialog(false);
-    } catch (err) {
-      setError("Failed to add patient. Please try again.");
-    }
+  const handleAddPatient = async (values: Omit<Patient, "id">) => {
+    await addNewPatient(values);
+    setOpenDialog(false);
   };
 
   const columns = [
@@ -178,7 +128,7 @@ const PatientsPage: React.FC = () => {
 
       <Card sx={{ mb: 4, p: 2 }}>
         <Grid container spacing={2}>
-          <Grid size={{ xs: 12, md: 5.5 }}>
+          <Grid item xs={12} md={5.5}>
             <TextField
               label="Search by Name"
               variant="outlined"
@@ -195,7 +145,7 @@ const PatientsPage: React.FC = () => {
               }}
             />
           </Grid>
-          <Grid size={{ xs: 12, md: 5.5 }}>
+          <Grid item xs={12} md={5.5}>
             <TextField
               label="Search by Phone"
               variant="outlined"
@@ -212,7 +162,7 @@ const PatientsPage: React.FC = () => {
               }}
             />
           </Grid>
-          <Grid size={{ xs: 12, md: 1 }}>
+          <Grid item xs={12} md={1}>
             <Button
               variant="contained"
               color="primary"
@@ -225,13 +175,7 @@ const PatientsPage: React.FC = () => {
         </Grid>
       </Card>
 
-      <Card
-        sx={{
-          p: 2,
-          overflowX: "auto",
-          whiteSpace: "nowrap",
-        }}
-      >
+      <Card sx={{ p: 2, overflowX: "auto", whiteSpace: "nowrap" }}>
         {loading ? (
           <CircularProgress sx={{ display: "block", mx: "auto" }} />
         ) : error ? (

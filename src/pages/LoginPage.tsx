@@ -13,6 +13,7 @@ import {
   Avatar,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import { useAuth } from "../contexts/AuthContext";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -20,7 +21,7 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-
+  const { setAccessToken } = useAuth();
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -31,7 +32,7 @@ const LoginPage: React.FC = () => {
       const { accessToken } = response.data;
 
       // Save the token to localStorage
-      localStorage.setItem("accessToken", accessToken);
+      setAccessToken(accessToken);
 
       // Navigate to the dashboard
       navigate("/dashboard");

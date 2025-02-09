@@ -1,5 +1,5 @@
 import axiosInstance from "./axiosInstance";
-import { Patient } from "../types/Patient";
+import { Patient } from "../features/patients/types";
 
 export const getPatients = async ({
   name = "",

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Card,
@@ -11,161 +11,47 @@ import {
   DialogContent,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import {
-  Delete as DeleteIcon,
-  Check as CheckIcon,
-  Edit as EditIcon,
-  Schedule as ScheduleIcon,
-} from "@mui/icons-material";
 import { useParams } from "react-router-dom";
-import GenericGrid from "../components/GenericGrid";
-import { getPatient, updatePatient } from "../api/patients";
-import {
-  getAppointmentsByPatientId,
-  createAppointment,
-  updateAppointment,
-} from "../api/appointments";
+import GenericGrid from "../components/common/GenericGrid";
+import AppointmentForm from "../features/appointments/components/AppointmentForm";
 import { formatDateTime } from "../utils/dateHelper";
-import { Patient } from "../types/Patient";
-import { Appointment } from "../types/Appointment";
-import AppointmentForm from "../components/AppointmentForm";
+import { usePatientDetails } from "../features/patients/hooks/usePatientDetails";
+import CheckIcon from "@mui/icons-material/Check";
+import EditIcon from "@mui/icons-material/Edit";
+import ScheduleIcon from "@mui/icons-material/Schedule";
 
 const PatientDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [patient, setPatient] = useState<Patient | null>(null);
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [editedFields, setEditedFields] = useState<Partial<Patient>>({});
+  const {
+    patient,
+    appointments,
+    loadingPatient,
+    loadingAppointments,
+    patientError,
+    appointmentsError,
+    handleFieldChange,
+    savePatientChanges,
+    addOrEditAppointment,
+    toggleAppointmentStatus,
+  } = usePatientDetails(id!);
+
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [currentAppointment, setCurrentAppointment] =
-    useState<Appointment | null>(null);
+  const [currentAppointment, setCurrentAppointment] = useState<any>(null);
 
-  const fetchPatient = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const patientData = await getPatient(id!);
-      const appointmentData = await getAppointmentsByPatientId(id!);
-      setPatient(patientData.data);
-      setAppointments(appointmentData);
-    } catch (err) {
-      setError("Failed to load patient details. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }, [id]);
-
-  useEffect(() => {
-    fetchPatient();
-  }, [fetchPatient]);
-
-  const handleFieldChange = (field: keyof Patient, value: any) => {
-    if (patient) {
-      setPatient({ ...patient, [field]: value });
-      setEditedFields({ ...editedFields, [field]: value });
-    }
-  };
-
-  const handleFieldBlur = async () => {
-    if (Object.keys(editedFields).length > 0 && patient) {
-      try {
-        await updatePatient(id!, { ...patient, ...editedFields });
-        setEditedFields({});
-      } catch (err) {
-        setError("Failed to save changes. Please try again.");
-      }
-    }
-  };
-
-  const handleAddAppointmentClick = () => {
-    setIsFormOpen(true);
-  };
-
-  const handleEditAppointment = (appointmentId: string) => {
-    const appointment = appointments.find((appt) => appt.id === appointmentId);
-    if (appointment) {
-      setCurrentAppointment(appointment); // Edit mode
-      setIsFormOpen(true);
-    }
-  };
-
-  const handleCheckAppointment = async (appointmentId: string) => {
-    try {
-      setAppointments((prevAppointments) =>
-        prevAppointments.map((appt) =>
-          appt.id === appointmentId
-            ? { ...appt, status: appt.status === "N" ? "C" : "N" }
-            : appt
-        )
-      );
-
-      const appointment = appointments.find(
-        (appt) => appt.id === appointmentId
-      );
-
-      if (appointment) {
-        const { patient, ...appointmentPayload } = appointment;
-
-        await updateAppointment(appointmentId, {
-          ...appointmentPayload,
-          status: appointment.status === "N" ? "C" : "N",
-        });
-      }
-    } catch (error) {
-      setError("Failed to update appointment status. Please try again.");
-    }
-  };
-
-  const handleFormSubmit = async (values: {
-    date: string;
-    motive: string;
-    obs: string;
-    status: string;
-  }) => {
-    try {
-      if (currentAppointment) {
-        // Editing existing appointment
-        await updateAppointment(currentAppointment.id, {
-          ...values,
-          id: currentAppointment.id,
-        });
-        setCurrentAppointment(null);
-      } else {
-        // Creating new appointment
-        const newAppointment = await createAppointment(id!, values);
-        setAppointments((prev) => [...prev, newAppointment]);
-      }
-      setIsFormOpen(false);
-    } catch (err) {
-      setError("Failed to save appointment. Please try again.");
-    }
-  };
-
-  const handleFormCancel = () => {
-    setCurrentAppointment(null);
-    setIsFormOpen(false);
-  };
-
-  if (loading) {
+  if (loadingPatient)
     return <CircularProgress sx={{ display: "block", mx: "auto", mt: 4 }} />;
-  }
-
-  if (error) {
+  if (patientError)
     return (
       <Typography variant="body1" color="error" textAlign="center">
-        {error}
+        {patientError}
       </Typography>
     );
-  }
-
-  if (!patient) {
+  if (!patient)
     return (
       <Typography variant="body1" textAlign="center">
         Patient not found.
       </Typography>
     );
-  }
 
   return (
     <Box sx={{ padding: 3 }}>
@@ -180,7 +66,7 @@ const PatientDetailsPage: React.FC = () => {
               label="Name"
               value={patient.name}
               onChange={(e) => handleFieldChange("name", e.target.value)}
-              onBlur={handleFieldBlur}
+              onBlur={savePatientChanges}
               sx={{ mb: 2 }}
             />
           </Grid>
@@ -190,7 +76,7 @@ const PatientDetailsPage: React.FC = () => {
               label="Phone"
               value={patient.phone}
               onChange={(e) => handleFieldChange("phone", e.target.value)}
-              onBlur={handleFieldBlur}
+              onBlur={savePatientChanges}
               sx={{ mb: 2 }}
             />
           </Grid>
@@ -200,7 +86,7 @@ const PatientDetailsPage: React.FC = () => {
               label="Job"
               value={patient.job}
               onChange={(e) => handleFieldChange("job", e.target.value)}
-              onBlur={handleFieldBlur}
+              onBlur={savePatientChanges}
               sx={{ mb: 2 }}
             />
           </Grid>
@@ -211,7 +97,7 @@ const PatientDetailsPage: React.FC = () => {
               type="date"
               value={patient.birth}
               onChange={(e) => handleFieldChange("birth", e.target.value)}
-              onBlur={handleFieldBlur}
+              onBlur={savePatientChanges}
               sx={{ mb: 2 }}
             />
           </Grid>
@@ -221,7 +107,7 @@ const PatientDetailsPage: React.FC = () => {
               label="Address"
               value={patient.address}
               onChange={(e) => handleFieldChange("address", e.target.value)}
-              onBlur={handleFieldBlur}
+              onBlur={savePatientChanges}
               sx={{ mb: 2 }}
             />
           </Grid>
@@ -231,7 +117,7 @@ const PatientDetailsPage: React.FC = () => {
               label="Gender"
               value={patient.gender}
               onChange={(e) => handleFieldChange("gender", e.target.value)}
-              onBlur={handleFieldBlur}
+              onBlur={savePatientChanges}
               sx={{ mb: 2 }}
             />
           </Grid>
@@ -243,7 +129,7 @@ const PatientDetailsPage: React.FC = () => {
               onChange={(e) =>
                 handleFieldChange("personalHistory", e.target.value)
               }
-              onBlur={handleFieldBlur}
+              onBlur={savePatientChanges}
               sx={{ mb: 2 }}
               rows={3}
               multiline
@@ -257,7 +143,7 @@ const PatientDetailsPage: React.FC = () => {
               onChange={(e) =>
                 handleFieldChange("physicalActivity", e.target.value)
               }
-              onBlur={handleFieldBlur}
+              onBlur={savePatientChanges}
               sx={{ mb: 2 }}
               rows={3}
               multiline
@@ -271,7 +157,7 @@ const PatientDetailsPage: React.FC = () => {
               onChange={(e) =>
                 handleFieldChange("familyHistory", e.target.value)
               }
-              onBlur={handleFieldBlur}
+              onBlur={savePatientChanges}
               sx={{ mb: 2 }}
               rows={3}
               multiline
@@ -279,27 +165,34 @@ const PatientDetailsPage: React.FC = () => {
           </Grid>
         </Grid>
       </Card>
-
       <Card sx={{ p: 2 }}>
         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
           <Typography variant="h6">Appointments</Typography>
           <Button
             variant="contained"
             color="primary"
-            onClick={handleAddAppointmentClick}
+            onClick={() => {
+              setCurrentAppointment(null);
+              setIsFormOpen(true);
+            }}
           >
             Add Appointment
           </Button>
         </Box>
-        {appointments.length > 0 ? (
+        {loadingAppointments ? (
+          <CircularProgress />
+        ) : appointmentsError ? (
+          <Typography variant="body1" color="error">
+            {appointmentsError}
+          </Typography>
+        ) : appointments.length > 0 ? (
           <GenericGrid
             rows={appointments.map((appt) => ({
               id: appt.id,
               date: formatDateTime(new Date(appt.date)),
-              name: appt.patient?.name,
+              name: patient.name, // since you're on a patient detail page
               status: appt.status,
               motive: appt.motive,
-
               obs: appt.obs,
             }))}
             columns={[
@@ -332,13 +225,16 @@ const PatientDetailsPage: React.FC = () => {
                 headerName: "Actions",
                 flex: 1,
                 minWidth: 250,
-                renderCell: ({ row }: { row: Appointment }) => (
+                renderCell: ({ row }: { row: any }) => (
                   <>
                     <Button
                       variant="text"
                       color="primary"
                       size="small"
-                      onClick={() => handleEditAppointment(row.id)}
+                      onClick={() => {
+                        setCurrentAppointment(row);
+                        setIsFormOpen(true);
+                      }}
                     >
                       <EditIcon />
                     </Button>
@@ -346,17 +242,9 @@ const PatientDetailsPage: React.FC = () => {
                       variant="text"
                       color="success"
                       size="small"
-                      onClick={() => handleCheckAppointment(row.id)}
+                      onClick={() => toggleAppointmentStatus(row.id)}
                     >
                       <CheckIcon />
-                    </Button>
-                    <Button
-                      variant="text"
-                      color="error"
-                      size="small"
-                      //  onClick={() => handleDeleteAppointment(row.id)}
-                    >
-                      <DeleteIcon />
                     </Button>
                   </>
                 ),
@@ -367,15 +255,18 @@ const PatientDetailsPage: React.FC = () => {
           <Typography>No appointments found for this patient.</Typography>
         )}
       </Card>
-      <Dialog open={isFormOpen} onClose={handleFormCancel}>
+      <Dialog open={isFormOpen} onClose={() => setIsFormOpen(false)}>
         <DialogTitle>
           {currentAppointment ? "Edit Appointment" : "Schedule Appointment"}
         </DialogTitle>
         <DialogContent>
           <AppointmentForm
             initialValues={currentAppointment || {}}
-            onSubmit={handleFormSubmit}
-            onCancel={handleFormCancel}
+            onSubmit={async (values) => {
+              await addOrEditAppointment(values);
+              setIsFormOpen(false);
+            }}
+            onCancel={() => setIsFormOpen(false)}
           />
         </DialogContent>
       </Dialog>

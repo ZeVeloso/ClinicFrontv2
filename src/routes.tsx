@@ -1,100 +1,72 @@
-import React from "react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import React, { lazy, Suspense } from "react";
+import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+
 import ProtectedRoute from "./components/ProtectedRoute";
-//import Navbar from "./components/Navbar/Navbar";
-import Navbar from "./components/SideMenu/NavBar";
-//import SignupPage from "./pages/SignupPage";
+//import Navbar from "./components/navigation/NavBar";
+import SignupPage from "./pages/SignupPage";
 import LoginPage from "./pages/LoginPage";
-import DashboardPage from "./pages/DashboardPage";
+
 import RouteErrorBoundary from "./components/RouteErrorBoundary";
 import theme from "./theme";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import { Box } from "@mui/material";
-import PatientsPage from "./pages/PatientsPage";
-import PatientPage from "./pages/PatientPage";
+
+import MainLayout from "./components/layout/MainLayout";
+//import Box from "@mui/material/Box";
 // Protected layout updated to use MUI styling
 // Updated ProtectedLayout component
-const ProtectedLayout: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  return (
-    <Box sx={{ display: "flex" }}>
-      {/* Sidebar */}
-      <Navbar />
 
-      {/* Main Content */}
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          overflow: "auto",
-          marginLeft: { xs: 0, md: "240px" }, // Adjust for mobile and desktop
-          marginTop: { xs: "6%", md: 0 },
-          transition: "margin-left 0.3s ease", // Smooth transition when opening/closing the sidebar
-        }}
-      >
-        {children}
-      </Box>
-    </Box>
-  );
-};
+const DashboardPage = lazy(() => import("./pages/DashboardPage"));
+const PatientsPage = lazy(() => import("./pages/PatientsPage"));
+const PatientPage = lazy(() => import("./pages/PatientPage"));
+const AppointmentsPage = lazy(() => import("./pages/AppointmentsPage"));
+const ProtectedApp: React.FC = () => (
+  <ProtectedRoute>
+    <MainLayout>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Outlet />
+      </Suspense>
+    </MainLayout>
+  </ProtectedRoute>
+);
 
 // Routes setup with MUI
-const routes = createBrowserRouter([
+const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <ProtectedRoute>
-        <ProtectedLayout>
-          <DashboardPage />
-        </ProtectedLayout>
-      </ProtectedRoute>
-    ),
+    element: <ProtectedApp />,
     errorElement: <RouteErrorBoundary />,
+    children: [
+      {
+        index: true,
+        element: <DashboardPage />,
+      },
+      {
+        path: "dashboard",
+        element: <DashboardPage />,
+      },
+      {
+        path: "patients",
+        element: <PatientsPage />,
+      },
+      {
+        path: "appointments",
+        element: <AppointmentsPage />,
+      },
+      {
+        path: "patients/:id",
+        element: <PatientPage />,
+      },
+    ],
   },
   {
     path: "/login",
     element: <LoginPage />,
     errorElement: <RouteErrorBoundary />,
   },
-  // {
-  //   path: "/signup",
-  //   element: <SignupPage />,
-  //   errorElement: <RouteErrorBoundary />,
-  // },
   {
-    path: "/dashboard",
-    element: (
-      <ProtectedRoute>
-        <ProtectedLayout>
-          <DashboardPage />
-        </ProtectedLayout>
-      </ProtectedRoute>
-    ),
-    errorElement: <RouteErrorBoundary />,
-  },
-  {
-    path: "/patients",
-    element: (
-      <ProtectedRoute>
-        <ProtectedLayout>
-          <PatientsPage />
-        </ProtectedLayout>
-      </ProtectedRoute>
-    ),
-    errorElement: <RouteErrorBoundary />,
-  },
-  {
-    path: "/patients/:id",
-    element: (
-      <ProtectedRoute>
-        <ProtectedLayout>
-          <PatientPage />
-        </ProtectedLayout>
-      </ProtectedRoute>
-    ),
+    path: "/signup",
+    element: <SignupPage />,
     errorElement: <RouteErrorBoundary />,
   },
   {
@@ -106,7 +78,7 @@ const routes = createBrowserRouter([
 const AppRoutes: React.FC = () => (
   <ThemeProvider theme={theme}>
     <CssBaseline />
-    <RouterProvider router={routes} />
+    <RouterProvider router={router} />
   </ThemeProvider>
 );
 

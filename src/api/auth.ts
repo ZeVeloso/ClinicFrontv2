@@ -10,3 +10,8 @@ export const signup = async (credentials: {
 }) => axiosInstance.post("/auth/signup", credentials);
 
 export const logout = async () => axiosInstance.post("/auth/logout");
+
+export const getCurrentUser = async () => {
+  const response = await axiosInstance.get("/users/logged");
+  return response.data.data;
+};

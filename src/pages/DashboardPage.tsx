@@ -111,9 +111,16 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getAppointments();
+        const data = await getAppointments({
+          patient: "",
+          phone: "",
+          date: "",
+          status: "",
+          page: 1,
+          pageSize: 20,
+        });
         // Map appointments to calendar events
-        const calendarEvents = data.map((appointment: any) => ({
+        const calendarEvents = data.data.map((appointment: any) => ({
           id: appointment.id,
           title: appointment.patient.name,
           start: new Date(appointment.date),
@@ -125,9 +132,11 @@ export default function Dashboard() {
 
         // Find the next appointment
         const upcoming = calendarEvents.filter(
-          (event) => event.start > new Date()
+          (event: any) => event.start > new Date()
         );
-        upcoming.sort((a, b) => a.start.getTime() - b.start.getTime());
+        upcoming.sort(
+          (a: any, b: any) => a.start.getTime() - b.start.getTime()
+        );
         setNextAppointment(upcoming[0] || null);
       } catch (err) {
         setError("Error fetching appointments");

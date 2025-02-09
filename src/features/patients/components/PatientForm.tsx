@@ -1,23 +1,11 @@
 import React, { useState } from "react";
 import { TextField, Box, Button, MenuItem, Grid } from "@mui/material";
+import { Patient } from "../types";
 
 type PatientFormProps = {
-  initialValues?: {
-    name: string;
-    birth: string;
-    phone: string;
-    gender: string;
-    address: string;
-    job: string;
-  };
-  onSubmit: (values: {
-    name: string;
-    birth: string;
-    phone: string;
-    gender: string;
-    address: string;
-    job: string;
-  }) => void;
+  initialValues?: Patient;
+  onSubmit: (values: Omit<Patient, "id">) => void;
+
   onCancel: () => void;
 };
 

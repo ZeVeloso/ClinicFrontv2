@@ -1,4 +1,4 @@
-import { Patient } from "./Patient";
+import { Patient } from "../patients/types";
 
 export type Appointment = {
   id: string;
