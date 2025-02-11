@@ -1,8 +1,10 @@
 import React from 'react';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import { googleLogin } from '../../api/auth';
+import { useNavigate } from 'react-router-dom';
 
 const GoogleLoginButton: React.FC = () => {
+  const navigate = useNavigate();
   const handleSuccess = async (credentialResponse: any) => {
     const token = credentialResponse.credential;
 
@@ -14,6 +16,7 @@ const GoogleLoginButton: React.FC = () => {
       localStorage.setItem('accessToken', accessToken);
       //localStorage.setItem('refreshToken', data.refreshToken);
       // Redirect or update UI as needed
+      navigate("/dashboard");
     } catch (error) {
       console.error('Error during Google login:', error);
     }
