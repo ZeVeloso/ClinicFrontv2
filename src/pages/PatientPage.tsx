@@ -19,7 +19,7 @@ import { usePatientDetails } from "../features/patients/hooks/usePatientDetails"
 import CheckIcon from "@mui/icons-material/Check";
 import EditIcon from "@mui/icons-material/Edit";
 import ScheduleIcon from "@mui/icons-material/Schedule";
-
+import CancelIcon from "@mui/icons-material/Cancel";
 const PatientDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const {
@@ -33,6 +33,7 @@ const PatientDetailsPage: React.FC = () => {
     savePatientChanges,
     addOrEditAppointment,
     toggleAppointmentStatus,
+    cancelAppointment,
   } = usePatientDetails(id!);
 
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -211,10 +212,12 @@ const PatientDetailsPage: React.FC = () => {
                       height: "100%",
                     }}
                   >
-                    {row.status === "C" ? (
+                    {row.status === "D" ? (
                       <CheckIcon color="success" />
                     ) : row.status === "N" ? (
                       <ScheduleIcon color="info" />
+                    ) : row.status === "C" ? (
+                      <CancelIcon color="error" />
                     ) : null}
                   </Box>
                 ),
@@ -245,6 +248,14 @@ const PatientDetailsPage: React.FC = () => {
                       onClick={() => toggleAppointmentStatus(row.id)}
                     >
                       <CheckIcon />
+                    </Button>
+                    <Button
+                      variant="text"
+                      color="error"
+                      size="small"
+                      onClick={() => cancelAppointment(row.id)}
+                    >
+                      <CancelIcon />
                     </Button>
                   </>
                 ),

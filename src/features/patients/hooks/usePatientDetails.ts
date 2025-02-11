@@ -1,31 +1,30 @@
 import { useState, useEffect, useCallback } from "react";
 import { getPatient, updatePatient } from "../../../api/patients";
-import {
-  getAppointmentsByPatientId,
-  updateAppointment,
-  createAppointment,
-} from "../../../api/appointments";
+import { getAppointmentsByPatientId } from "../../../api/appointments";
 import { Patient } from "../types";
 import { Appointment } from "../../appointments/types";
 import { useToast } from "../../../contexts/ToastContext";
+import { useAppointmentActions } from "../../appointments/hooks/useAppointmentActions";
 
 export const usePatientDetails = (patientId: string) => {
-  // State for patient details
+  // Patient state
   const [patient, setPatient] = useState<Patient | null>(null);
   const [loadingPatient, setLoadingPatient] = useState<boolean>(true);
   const [patientError, setPatientError] = useState<string | null>(null);
 
-  // State for appointments
+  // Appointments state
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loadingAppointments, setLoadingAppointments] = useState<boolean>(true);
   const [appointmentsError, setAppointmentsError] = useState<string | null>(
     null
   );
 
+  // Used to update patient fields before saving changes
   const [editedFields, setEditedFields] = useState<Partial<Patient>>({});
+
   const { showToast } = useToast();
 
-  // Fetch only patient details
+  // Fetch patient details
   const fetchPatient = useCallback(async () => {
     setLoadingPatient(true);
     setPatientError(null);
@@ -39,7 +38,7 @@ export const usePatientDetails = (patientId: string) => {
     }
   }, [patientId]);
 
-  // Fetch only appointments
+  // Fetch appointments for the patient
   const fetchAppointments = useCallback(async () => {
     setLoadingAppointments(true);
     setAppointmentsError(null);
@@ -53,12 +52,12 @@ export const usePatientDetails = (patientId: string) => {
     }
   }, [patientId]);
 
-  // On mount, load both in parallel
   useEffect(() => {
     fetchPatient();
     fetchAppointments();
   }, [fetchPatient, fetchAppointments]);
 
+  // Update patient fields as the user edits them
   const handleFieldChange = (field: keyof Patient, value: any) => {
     if (patient) {
       setPatient({ ...patient, [field]: value });
@@ -66,63 +65,57 @@ export const usePatientDetails = (patientId: string) => {
     }
   };
 
+  // Save the updated patient details
   const savePatientChanges = async () => {
-    if (Object.keys(editedFields).length > 0 && patient) {
+    if (patient && Object.keys(editedFields).length > 0) {
       try {
         await updatePatient(patientId, { ...patient, ...editedFields });
         setEditedFields({});
         showToast("Patient updated successfully", "success");
-        // Refresh only patient details
-        //await fetchPatient();
       } catch (err) {
         showToast("Error updating patient", "error");
       }
     }
   };
 
+  // Use the shared appointment actions with in-memory updates
+  const {
+    addAppointment,
+    editAppointment,
+    toggleAppointmentStatus,
+    cancelAppointment,
+  } = useAppointmentActions(appointments, setAppointments);
+
   const addOrEditAppointment = async (appointmentData: any) => {
     try {
       if (appointmentData.id) {
-        // Edit an existing appointment
-        await updateAppointment(appointmentData.id, appointmentData);
+        await editAppointment(appointmentData);
         showToast("Appointment updated successfully", "success");
       } else {
-        // Create a new appointment
-        await createAppointment(patientId, appointmentData);
+        const newAppointmentData = { ...appointmentData, patientId };
+        await addAppointment(newAppointmentData);
         showToast("Appointment created successfully", "success");
       }
-      // Refresh only appointments
-      await fetchAppointments();
     } catch (err) {
       showToast("Error saving appointment", "error");
     }
   };
 
-  const toggleAppointmentStatus = async (appointmentId: string) => {
+  const handleToggleAppointmentStatus = async (appointmentId: string) => {
     try {
-      // Optimistically update appointment status in state first
-      setAppointments((prev) =>
-        prev.map((appt) =>
-          appt.id === appointmentId
-            ? { ...appt, status: appt.status === "N" ? "C" : "N" }
-            : appt
-        )
-      );
-      const appointment = appointments.find(
-        (appt) => appt.id === appointmentId
-      );
-      if (appointment) {
-        const newStatus = appointment.status === "N" ? "C" : "N";
-        await updateAppointment(appointmentId, {
-          ...appointment,
-          status: newStatus,
-        });
-        showToast("Appointment status updated successfully", "success");
-      }
-      // Refresh only appointments
-      await fetchAppointments();
+      await toggleAppointmentStatus(appointmentId);
+      showToast("Appointment status updated successfully", "success");
     } catch (err) {
       showToast("Error updating appointment status", "error");
+    }
+  };
+
+  const handleCancelAppointment = async (appointmentId: string) => {
+    try {
+      await cancelAppointment(appointmentId);
+      showToast("Appointment cancelled successfully", "success");
+    } catch (err) {
+      showToast("Error cancelling appointment", "error");
     }
   };
 
@@ -136,8 +129,11 @@ export const usePatientDetails = (patientId: string) => {
     handleFieldChange,
     savePatientChanges,
     addOrEditAppointment,
-    toggleAppointmentStatus,
+    toggleAppointmentStatus: handleToggleAppointmentStatus,
+    cancelAppointment: handleCancelAppointment,
     refreshPatient: fetchPatient,
     refreshAppointments: fetchAppointments,
   };
 };
+
+export default usePatientDetails;

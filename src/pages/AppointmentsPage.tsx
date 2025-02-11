@@ -12,11 +12,16 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import InputAdornment from "@mui/material/InputAdornment";
-import { Add as AddIcon, Search as SearchIcon } from "@mui/icons-material";
+import {
+  Add as AddIcon,
+  Search as SearchIcon,
+  Edit as EditIcon,
+  Check as CheckIcon,
+  Cancel as CancelIcon,
+} from "@mui/icons-material";
 import GenericGrid from "../components/common/GenericGrid";
 import AppointmentForm from "../features/appointments/components/AppointmentForm";
 import { formatDateTime } from "../utils/dateHelper";
-import CheckIcon from "@mui/icons-material/Check";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import {
   useAppointments,
@@ -48,8 +53,16 @@ const AppointmentsPage: React.FC = () => {
     };
   }, [filters]);
 
-  const { appointments, totalAppointments, loading, error, addAppointment } =
-    useAppointments(debouncedFilters, page, pageSize);
+  const {
+    appointments,
+    totalAppointments,
+    loading,
+    error,
+    addAppointment,
+    editAppointment,
+    toggleAppointmentStatus,
+    cancelAppointment,
+  } = useAppointments(debouncedFilters, page, pageSize);
 
   // Update pagination states
   const handlePaginationChange = (paginationModel: {
@@ -102,15 +115,51 @@ const AppointmentsPage: React.FC = () => {
             height: "100%",
           }}
         >
-          {row.status === "C" ? (
+          {row.status === "D" ? (
             <CheckIcon color="success" />
           ) : row.status === "N" ? (
             <ScheduleIcon color="info" />
+          ) : row.status === "C" ? (
+            <CancelIcon color="error" />
           ) : null}
         </Box>
       ),
     },
     { field: "motive", headerName: "Motive", flex: 1, minWidth: 150 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      flex: 1,
+      minWidth: 200,
+      renderCell: ({ row }: { row: any }) => (
+        <Box sx={{ display: "flex", gap: 1 }}>
+          <Button
+            variant="text"
+            color="primary"
+            size="small"
+            onClick={() => editAppointment(row)}
+          >
+            <EditIcon />
+          </Button>
+          <Button
+            variant="text"
+            color="secondary"
+            size="small"
+            onClick={() => toggleAppointmentStatus(row.id)}
+          >
+            <CheckIcon />
+          </Button>
+          <Button
+            variant="text"
+            color="error"
+            size="small"
+            onClick={() => cancelAppointment(row.id)}
+          >
+            <CancelIcon />
+          </Button>
+        </Box>
+      ),
+    },
   ];
 
   return (
@@ -216,7 +265,7 @@ const AppointmentsPage: React.FC = () => {
         fullWidth
         maxWidth="sm"
       >
-        <DialogTitle>Add Appointment</DialogTitle>
+        {/* <DialogTitle>Add Appointment</DialogTitle> */}
         <DialogContent>
           <AppointmentForm
             onSubmit={handleAddAppointment}

@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
-import { getAppointments, createAppointment } from "../../../api/appointments";
+import { getAppointments } from "../../../api/appointments";
 import { Appointment } from "../types";
+import { useAppointmentActions } from "./useAppointmentActions";
 
-// Define an interface for your filters (adjust keys as needed)
 export interface AppointmentFilters {
   date: string;
   patient: string;
@@ -20,7 +20,6 @@ export const useAppointments = (
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch appointments based on current filters and pagination
   const fetchAppointments = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -30,7 +29,6 @@ export const useAppointments = (
         page: page + 1,
         pageSize,
       });
-
       setAppointments(response.data);
       setTotalAppointments(response.total);
     } catch (err) {
@@ -44,17 +42,13 @@ export const useAppointments = (
     fetchAppointments();
   }, [fetchAppointments]);
 
-  const addAppointment = useCallback(
-    async (appointmentData: any) => {
-      try {
-        await createAppointment(appointmentData.patientId, appointmentData);
-        await fetchAppointments();
-      } catch (err) {
-        setError("Error creating appointment. Please try again.");
-      }
-    },
-    [fetchAppointments]
-  );
+  // Use the modified appointment actions that perform in-memory updates
+  const {
+    addAppointment,
+    editAppointment,
+    toggleAppointmentStatus,
+    cancelAppointment,
+  } = useAppointmentActions(appointments, setAppointments);
 
   return {
     appointments,
@@ -62,6 +56,10 @@ export const useAppointments = (
     loading,
     error,
     addAppointment,
+    editAppointment,
+    toggleAppointmentStatus,
+    cancelAppointment,
+    refreshAppointments: fetchAppointments,
   };
 };
 
