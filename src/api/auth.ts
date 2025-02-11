@@ -15,3 +15,7 @@ export const getCurrentUser = async () => {
   const response = await axiosInstance.get("/users/logged");
   return response.data.data;
 };
+
+export const googleLogin = async (token: string) => {
+  return axiosInstance.post('/auth/google', { token });
+};

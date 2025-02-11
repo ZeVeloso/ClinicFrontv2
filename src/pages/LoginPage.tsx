@@ -14,6 +14,8 @@ import {
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { useAuth } from "../contexts/AuthContext";
+import GoogleLoginButton from '../components/authentication/GoogleLoginButton';
+
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -122,6 +124,7 @@ const LoginPage: React.FC = () => {
               "Sign In"
             )}
           </Button>
+          <GoogleLoginButton />
         </Box>
         <Typography variant="body2">
           Don't have an account?{" "}
