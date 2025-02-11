@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Toolbar } from "@mui/material";
+import { Box } from "@mui/material";
 import Navbar from "../navigation/NavBar";
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
