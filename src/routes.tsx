@@ -20,6 +20,7 @@ const DashboardPage = lazy(() => import("./pages/DashboardPage"));
 const PatientsPage = lazy(() => import("./pages/PatientsPage"));
 const PatientPage = lazy(() => import("./pages/PatientPage"));
 const AppointmentsPage = lazy(() => import("./pages/AppointmentsPage"));
+
 const ProtectedApp: React.FC = () => (
   <ProtectedRoute>
     <MainLayout>

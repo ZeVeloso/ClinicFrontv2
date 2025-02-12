@@ -83,7 +83,17 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, toggleDrawer }) => {
             <Typography variant="body1" fontWeight="bold">
               {user.name}
             </Typography>
-            <Typography variant="body2">{user.email}</Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                maxWidth: 150,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {user.email}
+            </Typography>
           </Box>
         </Stack>
       )}
