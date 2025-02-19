@@ -18,27 +18,19 @@ export const getAppointments = async ({
 
 export const getAppointmentsByPatientId = async (
   id: string
-): Promise<
-  {
-    id: string;
-    patient: Patient;
-    date: string;
-    motive: string;
-    status: string;
-    obs: string;
-  }[]
-> => {
+): Promise<Appointment[]> => {
   const response = await axiosInstance.get(`/patients/${id}/appointments`);
+  return response.data.data;
+};
+
+export const getAppointment = async (id: string): Promise<Appointment> => {
+  const response = await axiosInstance.get(`/appointments/${id}`);
   return response.data.data;
 };
 
 export const createAppointment = async (
   id: string,
-  appointmentData: {
-    date: string;
-    motive: string;
-    obs: string;
-  }
+  appointmentData: Appointment
 ) => {
   const response = await axiosInstance.post(
     `/patients/${id}/appointments`,

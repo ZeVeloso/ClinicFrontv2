@@ -12,6 +12,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 
 import MainLayout from "./components/layout/MainLayout";
+import AppointmentPage from "./pages/AppointmentPage";
 //import Box from "@mui/material/Box";
 // Protected layout updated to use MUI styling
 // Updated ProtectedLayout component
@@ -57,6 +58,10 @@ const router = createBrowserRouter([
       {
         path: "patients/:id",
         element: <PatientPage />,
+      },
+      {
+        path: "appointments/:id",
+        element: <AppointmentPage />,
       },
     ],
   },

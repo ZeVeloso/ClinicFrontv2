@@ -7,10 +7,11 @@ import {
   CircularProgress,
   TextField,
   Dialog,
+  DialogTitle,
   DialogContent,
+  InputAdornment,
+  Grid,
 } from "@mui/material";
-import Grid from "@mui/material/Grid";
-import InputAdornment from "@mui/material/InputAdornment";
 import {
   Add as AddIcon,
   Search as SearchIcon,
@@ -18,17 +19,19 @@ import {
   Check as CheckIcon,
   Cancel as CancelIcon,
 } from "@mui/icons-material";
-import GenericGrid from "../components/common/GenericGrid";
-import AppointmentForm from "../features/appointments/components/AppointmentForm";
-import { formatDateTime } from "../utils/dateHelper";
 import ScheduleIcon from "@mui/icons-material/Schedule";
+import GenericGrid from "../components/common/GenericGrid";
+import { formatDateTime } from "../utils/dateHelper";
+import AppointmentForm from "../features/appointments/components/AppointmentForm";
 import {
   useAppointments,
   AppointmentFilters,
 } from "../features/appointments/hooks/useAppointments";
+import { updateAppointment } from "../api/appointments";
+import { useToast } from "../contexts/ToastContext";
 
 const AppointmentsPage: React.FC = () => {
-  // Local state for filters, pagination, and dialog control
+  // Filter and pagination state
   const [filters, setFilters] = useState<AppointmentFilters>({
     patient: "",
     phone: "",
@@ -37,20 +40,23 @@ const AppointmentsPage: React.FC = () => {
   });
   const [page, setPage] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(20);
-  const [openDialog, setOpenDialog] = useState<boolean>(false);
 
-  // Using debouncedFilters to avoid rapid re-fetching when typing
+  // Local states to control the appointment dialog popup
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [currentAppointment, setCurrentAppointment] = useState<any>(null);
+
+  // Debounce filter changes to avoid fetching on every keystroke
   const [debouncedFilters, setDebouncedFilters] =
     useState<AppointmentFilters>(filters);
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedFilters(filters);
-      setPage(0); // reset to first page when filters change
+      setPage(0);
     }, 500);
-    return () => {
-      clearTimeout(handler);
-    };
+    return () => clearTimeout(handler);
   }, [filters]);
+
+  const { showToast } = useToast();
 
   const {
     appointments,
@@ -58,12 +64,11 @@ const AppointmentsPage: React.FC = () => {
     loading,
     error,
     addAppointment,
-    editAppointment,
     toggleAppointmentStatus,
     cancelAppointment,
+    refreshAppointments,
   } = useAppointments(debouncedFilters, page, pageSize);
 
-  // Update pagination states
   const handlePaginationChange = (paginationModel: {
     page: number;
     pageSize: number;
@@ -72,7 +77,6 @@ const AppointmentsPage: React.FC = () => {
     setPageSize(paginationModel.pageSize);
   };
 
-  // Handle filter changes
   const handleFilterChange = (
     field: keyof AppointmentFilters,
     value: string
@@ -80,13 +84,31 @@ const AppointmentsPage: React.FC = () => {
     setFilters((prev) => ({ ...prev, [field]: value }));
   };
 
-  // Handler for creating a new appointment, then refreshing the list
-  const handleAddAppointment = async (appointmentData: any) => {
-    await addAppointment(appointmentData);
-    setOpenDialog(false);
+  // Use updateAppointment directly for editing; addAppointment is used for new appointments.
+  const handleSaveAppointment = async (values: any) => {
+    try {
+      if (values.id) {
+        await updateAppointment(values.id, values);
+        showToast("Appointment updated successfully", "success");
+      } else {
+        // Supply a patientId as needed; for example, if appointments are tied to a patient
+        await addAppointment({ ...values, patientId: "" });
+        showToast("Appointment created successfully", "success");
+      }
+      setOpenDialog(false);
+      refreshAppointments();
+    } catch (error) {
+      console.error("Error saving appointment", error);
+      showToast("Error saving appointment", "error");
+    }
   };
 
-  // Map appointments to the grid rows
+  const handleOpenEditDialog = (appointment: any) => {
+    setCurrentAppointment(appointment);
+    setOpenDialog(true);
+  };
+
+  // Map appointments to grid rows; include the full appointment data for editing
   const rows = appointments.map((appt) => ({
     id: appt.id,
     date: formatDateTime(new Date(appt.date)),
@@ -94,9 +116,9 @@ const AppointmentsPage: React.FC = () => {
     phone: appt.patient?.phone,
     status: appt.status,
     motive: appt.motive,
+    fullData: appt,
   }));
 
-  // Define grid columns
   const columns = [
     { field: "date", headerName: "Date", flex: 1, minWidth: 100 },
     { field: "patient", headerName: "Patient", flex: 1, minWidth: 120 },
@@ -107,13 +129,7 @@ const AppointmentsPage: React.FC = () => {
       flex: 0.2,
       minWidth: 50,
       renderCell: ({ row }: { row: { status: string } }) => (
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            height: "100%",
-          }}
-        >
+        <Box sx={{ display: "flex", alignItems: "center", height: "100%" }}>
           {row.status === "D" ? (
             <CheckIcon color="success" />
           ) : row.status === "N" ? (
@@ -136,7 +152,7 @@ const AppointmentsPage: React.FC = () => {
             variant="text"
             color="primary"
             size="small"
-            onClick={() => editAppointment(row)}
+            onClick={() => handleOpenEditDialog(row.fullData)}
           >
             <EditIcon />
           </Button>
@@ -163,7 +179,7 @@ const AppointmentsPage: React.FC = () => {
 
   return (
     <Box sx={{ padding: 3, backgroundColor: "#f9f9f9" }}>
-      {/* Header with title and add button */}
+      {/* Header with title and Add button */}
       <Box
         sx={{
           display: "flex",
@@ -177,7 +193,10 @@ const AppointmentsPage: React.FC = () => {
           variant="contained"
           color="primary"
           startIcon={<AddIcon />}
-          onClick={() => setOpenDialog(true)}
+          onClick={() => {
+            setCurrentAppointment(null);
+            setOpenDialog(true);
+          }}
         >
           Add
         </Button>
@@ -257,17 +276,20 @@ const AppointmentsPage: React.FC = () => {
         )}
       </Card>
 
-      {/* Dialog for adding/editing an appointment */}
+      {/* Dialog popup for AppointmentForm */}
       <Dialog
         open={openDialog}
         onClose={() => setOpenDialog(false)}
         fullWidth
         maxWidth="sm"
       >
-        {/* <DialogTitle>Add Appointment</DialogTitle> */}
+        <DialogTitle>
+          {currentAppointment ? "Edit Appointment" : "Schedule Appointment"}
+        </DialogTitle>
         <DialogContent>
           <AppointmentForm
-            onSubmit={handleAddAppointment}
+            initialValues={currentAppointment || {}}
+            onSubmit={handleSaveAppointment}
             onCancel={() => setOpenDialog(false)}
           />
         </DialogContent>

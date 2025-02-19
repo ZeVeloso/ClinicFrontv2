@@ -4,11 +4,14 @@ import {
   updateAppointment,
 } from "../../../api/appointments";
 import { Appointment } from "../types";
+import { useNavigate } from "react-router-dom";
 
 export const useAppointmentActions = (
   appointments: Appointment[],
   setAppointments: React.Dispatch<React.SetStateAction<Appointment[]>>
 ) => {
+  const navigate = useNavigate();
+
   const addAppointment = useCallback(
     async (appointmentData: any) => {
       try {
@@ -25,27 +28,9 @@ export const useAppointmentActions = (
     [setAppointments]
   );
 
-  const editAppointment = useCallback(
-    async (appointmentData: any) => {
-      try {
-        if (!appointmentData.id) {
-          throw new Error("Appointment ID is required for editing.");
-        }
-        await updateAppointment(appointmentData.id, appointmentData);
-        // Update the local state by merging the changes in the matching appointment
-        setAppointments((prev) =>
-          prev.map((appt) =>
-            appt.id === appointmentData.id
-              ? { ...appt, ...appointmentData }
-              : appt
-          )
-        );
-      } catch (err) {
-        throw new Error("Error updating appointment. Please try again.");
-      }
-    },
-    [setAppointments]
-  );
+  const editAppointment = (appointmentData: any) => {
+    navigate(`/appointments/${appointmentData.id}`);
+  };
 
   const toggleAppointmentStatus = useCallback(
     async (appointmentId: string) => {
