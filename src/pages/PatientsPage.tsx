@@ -26,14 +26,14 @@ import { usePatients } from "../features/patients/hooks/usePatients";
 import { Patient } from "../features/patients/types";
 import { useAppNavigation } from "../hooks/useAppNavigation";
 
-const { toPatientDetails } = useAppNavigation();
-
 const PatientsPage: React.FC = () => {
   // local state for filtering, pagination, and dialog control
   const [filters, setFilters] = useState({ name: "", phone: "" });
   const [page, setPage] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(20);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
+
+  const { toPatientDetails } = useAppNavigation();
 
   // use our custom hook to fetch patients based on filters and pagination
   const { patients, totalPatients, loading, error, addNewPatient } =
