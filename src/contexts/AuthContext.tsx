@@ -16,6 +16,7 @@ interface AuthContextType {
   setAccessToken: (token: string | null) => void;
   refreshUserData: () => Promise<void>;
   isAuthenticated: boolean;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -63,6 +64,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setAccessToken,
         refreshUserData,
         isAuthenticated,
+        logout: () => {
+          setAccessToken(null);
+          setUser(null);
+        },
       }}
     >
       {children}

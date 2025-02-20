@@ -1,11 +1,11 @@
 import React from "react";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { googleLogin } from "../../api/auth";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-
+import { useAppNavigation } from "../../hooks/useAppNavigation";
+  
 const GoogleLoginButton: React.FC = () => {
-  const navigate = useNavigate();
+  const { toDashboard } = useAppNavigation();
   const { setAccessToken } = useAuth();
 
   const handleSuccess = async (credentialResponse: any) => {
@@ -19,7 +19,7 @@ const GoogleLoginButton: React.FC = () => {
       localStorage.setItem("accessToken", accessToken);
       //localStorage.setItem('refreshToken', data.refreshToken);
       // Redirect or update UI as needed
-      navigate("/dashboard");
+      toDashboard();
     } catch (error) {
       console.error("Error during Google login:", error);
     }

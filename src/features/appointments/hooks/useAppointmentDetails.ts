@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import {
   getAppointment,
   updateAppointment,
-  createAppointment,
 } from "../../../api/appointments";
 import { Appointment } from "../types";
 import { useToast } from "../../../contexts/ToastContext";

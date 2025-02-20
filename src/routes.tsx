@@ -13,6 +13,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 
 import MainLayout from "./components/layout/MainLayout";
 import AppointmentPage from "./pages/AppointmentPage";
+import LandingPage from "./pages/LandingPage";
 //import Box from "@mui/material/Box";
 // Protected layout updated to use MUI styling
 // Updated ProtectedLayout component
@@ -36,6 +37,11 @@ const ProtectedApp: React.FC = () => (
 const router = createBrowserRouter([
   {
     path: "/",
+    element: <LandingPage />,
+    errorElement: <RouteErrorBoundary />,
+  },
+  {
+    path: "/app",
     element: <ProtectedApp />,
     errorElement: <RouteErrorBoundary />,
     children: [
