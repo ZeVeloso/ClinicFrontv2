@@ -62,7 +62,8 @@ const Navbar: React.FC = () => {
                 variant="h6"
                 sx={{
                   fontWeight: 600,
-                  background: "linear-gradient(45deg, #2b3a67 30%, #496a81 90%)",
+                  background:
+                    "linear-gradient(45deg, #2b3a67 30%, #496a81 90%)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                 }}
@@ -77,7 +78,7 @@ const Navbar: React.FC = () => {
                   <NotificationsIcon />
                 </Badge>
               </IconButton>
-              
+
               <Avatar
                 src={user?.avatarUrl}
                 alt={user?.name}

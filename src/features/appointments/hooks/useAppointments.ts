@@ -20,7 +20,9 @@ export const useAppointments = (
   const [totalAppointments, setTotalAppointments] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [actionLoading, setActionLoading] = useState<{ [key: string]: boolean }>({});
+  const [actionLoading, setActionLoading] = useState<{
+    [key: string]: boolean;
+  }>({});
   const { showToast } = useToast();
   const fetchAppointments = useCallback(async () => {
     setLoading(true);
@@ -52,10 +54,14 @@ export const useAppointments = (
     cancelAppointment,
   } = useAppointmentActions(appointments, setAppointments);
 
-  const handleStatusAction = async (id: string, action: 'cancel' | 'complete', onSuccess?: () => void) => {
-    setActionLoading(prev => ({ ...prev, [id]: true }));
+  const handleStatusAction = async (
+    id: string,
+    action: "cancel" | "complete",
+    onSuccess?: () => void
+  ) => {
+    setActionLoading((prev) => ({ ...prev, [id]: true }));
     try {
-      if (action === 'cancel') {
+      if (action === "cancel") {
         await cancelAppointment(id);
         showToast("Appointment cancelled successfully", "success");
       } else {
@@ -67,7 +73,7 @@ export const useAppointments = (
     } catch (error) {
       showToast("Error updating appointment", "error");
     } finally {
-      setActionLoading(prev => ({ ...prev, [id]: false }));
+      setActionLoading((prev) => ({ ...prev, [id]: false }));
     }
   };
 

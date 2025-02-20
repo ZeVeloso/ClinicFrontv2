@@ -38,36 +38,38 @@ const MenuItems: React.FC<MenuItemsProps> = ({ items, currentPath }) => {
             sx={{
               borderRadius: 2,
               mb: 0.5,
-              color: isActive ? 'primary.main' : 'text.primary',
-              bgcolor: isActive ? alpha(theme.palette.primary.main, 0.08) : 'transparent',
-              '&:hover': {
-                bgcolor: isActive 
+              color: isActive ? "primary.main" : "text.primary",
+              bgcolor: isActive
+                ? alpha(theme.palette.primary.main, 0.08)
+                : "transparent",
+              "&:hover": {
+                bgcolor: isActive
                   ? alpha(theme.palette.primary.main, 0.12)
                   : alpha(theme.palette.action.hover, 0.04),
               },
-              transition: 'all 0.2s',
+              transition: "all 0.2s",
             }}
           >
             {icon && (
               <ListItemIcon
                 sx={{
-                  color: isActive ? 'primary.main' : 'inherit',
+                  color: isActive ? "primary.main" : "inherit",
                   minWidth: 40,
                 }}
               >
                 {icon}
               </ListItemIcon>
             )}
-            <ListItemText 
+            <ListItemText
               primary={label}
               primaryTypographyProps={{
-                fontSize: '0.875rem',
+                fontSize: "0.875rem",
                 fontWeight: isActive ? 600 : 400,
               }}
             />
           </ListItem>
-        )}
-      )}
+        );
+      })}
     </List>
   );
 };

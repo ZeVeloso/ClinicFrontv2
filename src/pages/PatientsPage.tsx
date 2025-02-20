@@ -122,58 +122,73 @@ const PatientsPage: React.FC = () => {
   }));
 
   const stats = [
-    { label: 'Total Patients', value: totalPatients },
-    { label: 'New This Month', value: '28' },
-    { label: 'Active Patients', value: '156' },
+    { label: "Total Patients", value: totalPatients },
+    { label: "New This Month", value: "28" },
+    { label: "Active Patients", value: "156" },
   ];
 
   return (
     <Box sx={{ padding: 3, backgroundColor: "#f5f7fb" }}>
       {/* Improved header section */}
       <Box sx={{ mb: 4 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+        <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
           <Typography
             sx={{
-              fontSize: '12px',
-              color: 'text.secondary',
-              display: 'flex',
-              alignItems: 'center',
+              fontSize: "12px",
+              color: "text.secondary",
+              display: "flex",
+              alignItems: "center",
               gap: 1,
             }}
           >
             Dashboard / <Typography color="primary">Patients</Typography>
           </Typography>
         </Box>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Typography variant="h4" sx={{ fontWeight: 600 }}>Patient Management</Typography>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3,
+          }}
+        >
+          <Typography variant="h4" sx={{ fontWeight: 600 }}>
+            Patient Management
+          </Typography>
           <Button
             variant="contained"
             color="primary"
             startIcon={<AddIcon />}
             onClick={() => setOpenDialog(true)}
-            sx={{ 
+            sx={{
               borderRadius: 2,
-              textTransform: 'none',
-              px: 3 
+              textTransform: "none",
+              px: 3,
             }}
           >
             Add Patient
           </Button>
         </Box>
-        
+
         {/* Stats Cards */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
           {stats.map((stat) => (
             <Grid item xs={12} md={4} key={stat.label}>
-              <Card sx={{ 
-                p: 3, 
-                display: 'flex', 
-                flexDirection: 'column',
-                bgcolor: 'background.paper',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-                borderRadius: 2,
-              }}>
-                <Typography color="text.secondary" variant="body2" sx={{ mb: 1 }}>
+              <Card
+                sx={{
+                  p: 3,
+                  display: "flex",
+                  flexDirection: "column",
+                  bgcolor: "background.paper",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+                  borderRadius: 2,
+                }}
+              >
+                <Typography
+                  color="text.secondary"
+                  variant="body2"
+                  sx={{ mb: 1 }}
+                >
                   {stat.label}
                 </Typography>
                 <Typography variant="h4" sx={{ fontWeight: 600 }}>
@@ -186,7 +201,14 @@ const PatientsPage: React.FC = () => {
       </Box>
 
       {/* Improved search filters */}
-      <Card sx={{ mb: 4, p: 3, borderRadius: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+      <Card
+        sx={{
+          mb: 4,
+          p: 3,
+          borderRadius: 2,
+          boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+        }}
+      >
         <Grid container spacing={3}>
           <Grid item xs={12} md={5}>
             <TextField
@@ -199,15 +221,15 @@ const PatientsPage: React.FC = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon sx={{ color: 'text.secondary' }} />
+                    <SearchIcon sx={{ color: "text.secondary" }} />
                   </InputAdornment>
                 ),
               }}
-              sx={{ 
-                '& .MuiOutlinedInput-root': {
+              sx={{
+                "& .MuiOutlinedInput-root": {
                   borderRadius: 2,
-                  bgcolor: 'background.paper',
-                }
+                  bgcolor: "background.paper",
+                },
               }}
             />
           </Grid>
@@ -222,15 +244,15 @@ const PatientsPage: React.FC = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon sx={{ color: 'text.secondary' }} />
+                    <SearchIcon sx={{ color: "text.secondary" }} />
                   </InputAdornment>
                 ),
               }}
-              sx={{ 
-                '& .MuiOutlinedInput-root': {
+              sx={{
+                "& .MuiOutlinedInput-root": {
                   borderRadius: 2,
-                  bgcolor: 'background.paper',
-                }
+                  bgcolor: "background.paper",
+                },
               }}
             />
           </Grid>
@@ -238,36 +260,47 @@ const PatientsPage: React.FC = () => {
       </Card>
 
       {/* Improved table card */}
-      <Card sx={{ 
-        p: 3, 
-        borderRadius: 2, 
-        boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-        '& .MuiDataGrid-root': {
-          border: 'none',
-          '& .MuiDataGrid-cell': {
-            borderBottom: '1px solid #f0f0f0',
+      <Card
+        sx={{
+          p: 3,
+          borderRadius: 2,
+          boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+          "& .MuiDataGrid-root": {
+            border: "none",
+            "& .MuiDataGrid-cell": {
+              borderBottom: "1px solid #f0f0f0",
+            },
+            "& .MuiDataGrid-columnHeaders": {
+              bgcolor: "#f8fafc",
+              borderBottom: "1px solid #e0e0e0",
+            },
           },
-          '& .MuiDataGrid-columnHeaders': {
-            bgcolor: '#f8fafc',
-            borderBottom: '1px solid #e0e0e0',
-          },
-        }
-      }}>
+        }}
+      >
         {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 8 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              py: 8,
+            }}
+          >
             <CircularProgress size={40} />
             <Typography sx={{ ml: 2 }} color="text.secondary">
               Loading patients...
             </Typography>
           </Box>
         ) : error ? (
-          <Box sx={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center', 
-            py: 8,
-            color: 'error.main' 
-          }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              py: 8,
+              color: "error.main",
+            }}
+          >
             <Typography variant="body1">{error}</Typography>
           </Box>
         ) : (
@@ -287,23 +320,25 @@ const PatientsPage: React.FC = () => {
       </Card>
 
       {/* Improved dialog */}
-      <Dialog 
-        open={openDialog} 
+      <Dialog
+        open={openDialog}
         onClose={() => setOpenDialog(false)}
         maxWidth="sm"
         fullWidth
         PaperProps={{
           sx: {
             borderRadius: 2,
-          }
+          },
         }}
       >
-        <DialogTitle sx={{ 
-          pb: 2,
-          borderBottom: '1px solid #f0f0f0',
-          fontSize: '1.2rem',
-          fontWeight: 600
-        }}>
+        <DialogTitle
+          sx={{
+            pb: 2,
+            borderBottom: "1px solid #f0f0f0",
+            fontSize: "1.2rem",
+            fontWeight: 600,
+          }}
+        >
           Add New Patient
         </DialogTitle>
         <DialogContent sx={{ pt: 3 }}>

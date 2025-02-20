@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useAuth } from "../contexts/AuthContext";
-import GoogleLoginButton from '../components/authentication/GoogleLoginButton';
+import GoogleLoginButton from "../components/authentication/GoogleLoginButton";
 import { useAppNavigation } from "../hooks/useAppNavigation";
 import { PUBLIC_PATHS } from "../config/navigationConfig";
 import clinicLogo from "../assets/Clinic+.png";
@@ -40,7 +40,9 @@ const LoginPage: React.FC = () => {
       setAccessToken(accessToken);
       toDashboard();
     } catch (err: any) {
-      setError(err.response?.data?.message || "Login failed. Please try again.");
+      setError(
+        err.response?.data?.message || "Login failed. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -111,11 +113,7 @@ const LoginPage: React.FC = () => {
             </Typography>
           )}
 
-          <Box
-            component="form"
-            onSubmit={handleLogin}
-            sx={{ width: "100%" }}
-          >
+          <Box component="form" onSubmit={handleLogin} sx={{ width: "100%" }}>
             <TextField
               margin="normal"
               required
@@ -128,9 +126,9 @@ const LoginPage: React.FC = () => {
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
               sx={{
-                '& .MuiOutlinedInput-root': {
+                "& .MuiOutlinedInput-root": {
                   borderRadius: 2,
-                }
+                },
               }}
             />
             <TextField
@@ -157,9 +155,9 @@ const LoginPage: React.FC = () => {
                 ),
               }}
               sx={{
-                '& .MuiOutlinedInput-root': {
+                "& .MuiOutlinedInput-root": {
                   borderRadius: 2,
-                }
+                },
               }}
             />
 
@@ -173,8 +171,8 @@ const LoginPage: React.FC = () => {
                 mb: 2,
                 py: 1.5,
                 borderRadius: 2,
-                textTransform: 'none',
-                fontSize: '1rem',
+                textTransform: "none",
+                fontSize: "1rem",
               }}
             >
               {isLoading ? (
@@ -197,9 +195,9 @@ const LoginPage: React.FC = () => {
 
           <Typography variant="body2" color="text.secondary">
             Don't have an account?{" "}
-            <Link 
-              href={PUBLIC_PATHS.SIGNUP} 
-              variant="body2" 
+            <Link
+              href={PUBLIC_PATHS.SIGNUP}
+              variant="body2"
               underline="hover"
               sx={{ fontWeight: 500 }}
             >

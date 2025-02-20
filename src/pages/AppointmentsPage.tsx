@@ -66,7 +66,7 @@ const AppointmentsPage: React.FC = () => {
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
     appointmentId: string | null;
-    action: 'cancel' | 'complete' | null;
+    action: "cancel" | "complete" | null;
   }>({ open: false, appointmentId: null, action: null });
 
   const {
@@ -145,20 +145,32 @@ const AppointmentsPage: React.FC = () => {
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Chip
             label={
-              row.status === "D" ? "Done" :
-              row.status === "N" ? "Scheduled" :
-              row.status === "C" ? "Cancelled" : "Unknown"
+              row.status === "D"
+                ? "Done"
+                : row.status === "N"
+                  ? "Scheduled"
+                  : row.status === "C"
+                    ? "Cancelled"
+                    : "Unknown"
             }
             color={
-              row.status === "D" ? "success" :
-              row.status === "N" ? "primary" :
-              row.status === "C" ? "error" : "default"
+              row.status === "D"
+                ? "success"
+                : row.status === "N"
+                  ? "primary"
+                  : row.status === "C"
+                    ? "error"
+                    : "default"
             }
             size="small"
             icon={
-              row.status === "D" ? <CheckIcon /> :
-              row.status === "N" ? <ScheduleIcon /> :
-              row.status === "C" ? <CancelIcon /> : undefined
+              row.status === "D" ? (
+                <CheckIcon />
+              ) : row.status === "N" ? (
+                <ScheduleIcon />
+              ) : row.status === "C" ? (
+                <CancelIcon />
+              ) : undefined
             }
           />
         </Box>
@@ -174,7 +186,6 @@ const AppointmentsPage: React.FC = () => {
         <Box sx={{ display: "flex", gap: 1 }}>
           <Tooltip title="Edit appointment">
             <Button
-          
               color="primary"
               size="small"
               onClick={() => handleOpenEditDialog(row.fullData)}
@@ -186,15 +197,16 @@ const AppointmentsPage: React.FC = () => {
           <Tooltip title="Mark as complete">
             <span>
               <Button
-            
                 color="success"
                 size="small"
-                onClick={() => setConfirmDialog({
-                  open: true,
-                  appointmentId: row.id,
-                  action: 'complete'
-                })}
-                disabled={row.status === 'D' || actionLoading[row.id]}
+                onClick={() =>
+                  setConfirmDialog({
+                    open: true,
+                    appointmentId: row.id,
+                    action: "complete",
+                  })
+                }
+                disabled={row.status === "D" || actionLoading[row.id]}
                 aria-label="Mark appointment as complete"
               >
                 {actionLoading[row.id] ? (
@@ -208,15 +220,16 @@ const AppointmentsPage: React.FC = () => {
           <Tooltip title="Cancel appointment">
             <span>
               <Button
-              
                 color="error"
                 size="small"
-                onClick={() => setConfirmDialog({
-                  open: true,
-                  appointmentId: row.id,
-                  action: 'cancel'
-                })}
-                disabled={row.status === 'C' || actionLoading[row.id]}
+                onClick={() =>
+                  setConfirmDialog({
+                    open: true,
+                    appointmentId: row.id,
+                    action: "cancel",
+                  })
+                }
+                disabled={row.status === "C" || actionLoading[row.id]}
                 aria-label="Cancel appointment"
               >
                 {actionLoading[row.id] ? (
@@ -348,34 +361,54 @@ const AppointmentsPage: React.FC = () => {
       </Card>
       <Dialog
         open={confirmDialog.open}
-        onClose={() => setConfirmDialog({ open: false, appointmentId: null, action: null })}
+        onClose={() =>
+          setConfirmDialog({ open: false, appointmentId: null, action: null })
+        }
       >
         <DialogTitle>
-          {confirmDialog.action === 'cancel' ? 'Cancel Appointment' : 'Complete Appointment'}
+          {confirmDialog.action === "cancel"
+            ? "Cancel Appointment"
+            : "Complete Appointment"}
         </DialogTitle>
         <DialogContent>
           <Typography>
-            Are you sure you want to {confirmDialog.action === 'cancel' ? 'cancel' : 'mark as complete'} this appointment?
+            Are you sure you want to{" "}
+            {confirmDialog.action === "cancel" ? "cancel" : "mark as complete"}{" "}
+            this appointment?
           </Typography>
         </DialogContent>
         <DialogActions>
           <Button
-            onClick={() => setConfirmDialog({ open: false, appointmentId: null, action: null })}
+            onClick={() =>
+              setConfirmDialog({
+                open: false,
+                appointmentId: null,
+                action: null,
+              })
+            }
             color="inherit"
           >
             No, Keep it
           </Button>
           <Button
-            onClick={() => confirmDialog.appointmentId && handleStatusAction(
-              confirmDialog.appointmentId,
-              confirmDialog.action!,
-              () => setConfirmDialog({ open: false, appointmentId: null, action: null })
-            )}
-            color={confirmDialog.action === 'cancel' ? 'error' : 'success'}
+            onClick={() =>
+              confirmDialog.appointmentId &&
+              handleStatusAction(
+                confirmDialog.appointmentId,
+                confirmDialog.action!,
+                () =>
+                  setConfirmDialog({
+                    open: false,
+                    appointmentId: null,
+                    action: null,
+                  })
+              )
+            }
+            color={confirmDialog.action === "cancel" ? "error" : "success"}
             variant="contained"
             autoFocus
           >
-            Yes, {confirmDialog.action === 'cancel' ? 'Cancel' : 'Complete'} it
+            Yes, {confirmDialog.action === "cancel" ? "Cancel" : "Complete"} it
           </Button>
         </DialogActions>
       </Dialog>

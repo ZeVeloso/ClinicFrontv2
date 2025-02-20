@@ -21,10 +21,10 @@ import {
   TimePicker,
 } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import EventIcon from '@mui/icons-material/Event';
-import PersonIcon from '@mui/icons-material/Person';
-import SaveIcon from '@mui/icons-material/Save';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import EventIcon from "@mui/icons-material/Event";
+import PersonIcon from "@mui/icons-material/Person";
+import SaveIcon from "@mui/icons-material/Save";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useAppointmentDetails } from "../features/appointments/hooks/useAppointmentDetails";
 import { Appointment } from "../features/appointments/types";
 import { useToast } from "../contexts/ToastContext";
@@ -137,8 +137,14 @@ const AppointmentPage: React.FC = () => {
   }
 
   return (
-    <Box sx={{ padding: 3, backgroundColor: "#f5f5f5", minHeight: "calc(100vh - 64px)" }}>
-      <Container >
+    <Box
+      sx={{
+        padding: 3,
+        backgroundColor: "#f5f5f5",
+        minHeight: "calc(100vh - 64px)",
+      }}
+    >
+      <Container>
         {/* Header Section */}
         <Box sx={{ mb: 4 }}>
           <Button
@@ -160,7 +166,12 @@ const AppointmentPage: React.FC = () => {
           {/* Patient Information Card */}
           {appointment?.patient && (
             <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
-              <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
+              <Stack
+                direction="row"
+                alignItems="center"
+                spacing={2}
+                sx={{ mb: 2 }}
+              >
                 <PersonIcon color="primary" />
                 <Typography variant="h6">Patient Information</Typography>
               </Stack>
@@ -193,7 +204,10 @@ const AppointmentPage: React.FC = () => {
               <Grid container spacing={3}>
                 {/* Date and Time Section */}
                 <Grid item xs={12}>
-                  <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 500 }}>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{ mb: 2, fontWeight: 500 }}
+                  >
                     Schedule Details
                   </Typography>
                   <Grid container spacing={2}>
@@ -301,7 +315,9 @@ const AppointmentPage: React.FC = () => {
                             <Chip
                               label={label}
                               size="small"
-                              color={statusColors[key as keyof typeof statusColors]}
+                              color={
+                                statusColors[key as keyof typeof statusColors]
+                              }
                               sx={{ mr: 1 }}
                             />
                           </MenuItem>
@@ -324,7 +340,9 @@ const AppointmentPage: React.FC = () => {
                         onChange={field.onChange}
                         InputProps={{
                           inputProps: { min: 0, step: 0.01 },
-                          startAdornment: <Typography sx={{ mr: 1 }}>€</Typography>,
+                          startAdornment: (
+                            <Typography sx={{ mr: 1 }}>€</Typography>
+                          ),
                         }}
                       />
                     )}
@@ -333,11 +351,15 @@ const AppointmentPage: React.FC = () => {
               </Grid>
 
               {/* Action Buttons */}
-              <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-                <Button
-                  variant="outlined"
-                  onClick={() => toAppointments()}
-                >
+              <Box
+                sx={{
+                  mt: 4,
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: 2,
+                }}
+              >
+                <Button variant="outlined" onClick={() => toAppointments()}>
                   Cancel
                 </Button>
                 <Button

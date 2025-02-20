@@ -49,10 +49,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, toggleDrawer }) => {
           bgcolor: alpha(theme.palette.primary.main, 0.03),
         }}
       >
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           <Box
             component="img"
             src={clinicLogo}
@@ -80,20 +77,14 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, toggleDrawer }) => {
 
       {/* Main Navigation */}
       <Box sx={{ flexGrow: 1, overflowY: "auto", py: 2 }}>
-        <MenuItems 
-          items={appMenuItems} 
-          currentPath={location.pathname}
-        />
+        <MenuItems items={appMenuItems} currentPath={location.pathname} />
       </Box>
 
       <Divider />
 
       {/* Profile Section */}
       <Box sx={{ p: 2 }}>
-        <MenuItems 
-          items={profileMenuItems}
-          currentPath={location.pathname}
-        />
+        <MenuItems items={profileMenuItems} currentPath={location.pathname} />
       </Box>
 
       <Divider />

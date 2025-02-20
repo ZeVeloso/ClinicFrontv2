@@ -22,7 +22,7 @@ const formatTime = (date: Date) => moment(date).format("h:mm A");
 function NextAppointmentCard({ appointment, loading, error }: any) {
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+      <Box sx={{ display: "flex", justifyContent: "center", p: 3 }}>
         <CircularProgress size={30} />
       </Box>
     );
@@ -30,7 +30,7 @@ function NextAppointmentCard({ appointment, loading, error }: any) {
 
   if (error) {
     return (
-      <Box sx={{ p: 2, textAlign: 'center' }}>
+      <Box sx={{ p: 2, textAlign: "center" }}>
         <Typography variant="body1" color="error">
           {error}
         </Typography>
@@ -40,13 +40,15 @@ function NextAppointmentCard({ appointment, loading, error }: any) {
 
   if (!appointment) {
     return (
-      <Box sx={{ 
-        p: 4, 
-        textAlign: 'center',
-        bgcolor: '#f8fafc',
-        borderRadius: 2
-      }}>
-        <Event sx={{ fontSize: 40, color: 'text.secondary', mb: 2 }} />
+      <Box
+        sx={{
+          p: 4,
+          textAlign: "center",
+          bgcolor: "#f8fafc",
+          borderRadius: 2,
+        }}
+      >
+        <Event sx={{ fontSize: 40, color: "text.secondary", mb: 2 }} />
         <Typography variant="body1" color="text.secondary">
           No upcoming appointments
         </Typography>
@@ -56,35 +58,35 @@ function NextAppointmentCard({ appointment, loading, error }: any) {
 
   return (
     <>
-      <Box sx={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        mb: 3,
-        pb: 2,
-        borderBottom: '1px solid #f0f0f0'
-      }}>
-        <Event sx={{ color: 'primary.main', mr: 1 }} />
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          mb: 3,
+          pb: 2,
+          borderBottom: "1px solid #f0f0f0",
+        }}
+      >
+        <Event sx={{ color: "primary.main", mr: 1 }} />
         <Typography variant="h6">Next Appointment</Typography>
       </Box>
-      
+
       <Grid container spacing={3}>
         <Grid item xs={12} sm={6}>
-          <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
-            <Person sx={{ color: 'text.secondary', mr: 1, mt: 0.5 }} />
+          <Box sx={{ display: "flex", alignItems: "flex-start", mb: 2 }}>
+            <Person sx={{ color: "text.secondary", mr: 1, mt: 0.5 }} />
             <Box>
               <Typography variant="body2" color="text.secondary" gutterBottom>
                 Patient
               </Typography>
-              <Typography variant="h6">
-                {appointment.title}
-              </Typography>
+              <Typography variant="h6">{appointment.title}</Typography>
             </Box>
           </Box>
         </Grid>
-        
+
         <Grid item xs={12} sm={6}>
-          <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
-            <AccessTime sx={{ color: 'text.secondary', mr: 1, mt: 0.5 }} />
+          <Box sx={{ display: "flex", alignItems: "flex-start", mb: 2 }}>
+            <AccessTime sx={{ color: "text.secondary", mr: 1, mt: 0.5 }} />
             <Box>
               <Typography variant="body2" color="text.secondary" gutterBottom>
                 Date & Time
@@ -101,19 +103,19 @@ function NextAppointmentCard({ appointment, loading, error }: any) {
 
         {appointment.details && (
           <Grid item xs={12}>
-            <Box sx={{ 
-              mt: 2, 
-              p: 2, 
-              bgcolor: '#f8fafc',
-              borderRadius: 1,
-              border: '1px solid #e0e7ff'
-            }}>
+            <Box
+              sx={{
+                mt: 2,
+                p: 2,
+                bgcolor: "#f8fafc",
+                borderRadius: 1,
+                border: "1px solid #e0e7ff",
+              }}
+            >
               <Typography variant="body2" color="text.secondary" gutterBottom>
                 Details
               </Typography>
-              <Typography variant="body1">
-                {appointment.details}
-              </Typography>
+              <Typography variant="body1">{appointment.details}</Typography>
             </Box>
           </Grid>
         )}
@@ -133,7 +135,7 @@ interface CalendarEvent {
 function CalendarView({ events, loading, error }: any) {
   if (error) {
     return (
-      <Box sx={{ p: 2, textAlign: 'center' }}>
+      <Box sx={{ p: 2, textAlign: "center" }}>
         <Typography color="error">{error}</Typography>
       </Box>
     );
@@ -160,14 +162,14 @@ function CalendarView({ events, loading, error }: any) {
         weekDays: [0, 1, 2, 3, 4, 5, 6],
         weekStartOn: 1,
         startHour: 7,
-        endHour: 21
+        endHour: 21,
       }}
       onEventClick={(event: any) => console.log(event)}
       customViewer={(event: any) => (
         <Box sx={{ p: 2 }}>
           <Typography variant="h6">{event.title}</Typography>
           <Typography variant="body2">
-            {moment(event.start).format('MMMM Do YYYY, H:mm a')}
+            {moment(event.start).format("MMMM Do YYYY, H:mm a")}
           </Typography>
         </Box>
       )}
@@ -282,18 +284,15 @@ export default function Dashboard() {
     fetchData();
   }, []);
 
-  console.log('Loading:', loading);
-  console.log('Events:', events);
-  console.log('Error:', error);
+  console.log("Loading:", loading);
+  console.log("Events:", events);
+  console.log("Error:", error);
 
   return (
     <Box sx={{ p: 3, backgroundColor: "#f5f7fb" }}>
       {/* Header Section */}
       <Box sx={{ mb: 4 }}>
-        <Typography
-          variant="body2"
-          sx={{ mb: 1, color: 'text.secondary' }}
-        >
+        <Typography variant="body2" sx={{ mb: 1, color: "text.secondary" }}>
           Dashboard
         </Typography>
         <Typography variant="h4" sx={{ fontWeight: 600 }}>
@@ -303,10 +302,12 @@ export default function Dashboard() {
 
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Card sx={{ 
-            borderRadius: 2,
-            boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-          }}>
+          <Card
+            sx={{
+              borderRadius: 2,
+              boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+            }}
+          >
             <CardContent sx={{ p: 3 }}>
               <NextAppointmentCard
                 appointment={nextAppointment}
@@ -319,35 +320,40 @@ export default function Dashboard() {
       </Grid>
 
       <Box mt={3}>
-        <Card sx={{ 
-          borderRadius: 2,
-          boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-        }}>
+        <Card
+          sx={{
+            borderRadius: 2,
+            boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+          }}
+        >
           <CardContent sx={{ p: 3 }}>
-            <Box sx={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              mb: 3,
-              pb: 2,
-              borderBottom: '1px solid #f0f0f0'
-            }}>
-              <Event sx={{ color: 'primary.main', mr: 1 }} />
-              <Typography variant="h6">
-                Calendar
-              </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                mb: 3,
+                pb: 2,
+                borderBottom: "1px solid #f0f0f0",
+              }}
+            >
+              <Event sx={{ color: "primary.main", mr: 1 }} />
+              <Typography variant="h6">Calendar</Typography>
             </Box>
             <Box sx={{ height: 600 }}>
-            {loading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                <CircularProgress />
-              </Box>
-            ) : (
-              <CalendarView 
-                events={events} 
-                loading={loading} 
-                error={error} 
-              />
-            )}
+              {loading ? (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                  }}
+                >
+                  <CircularProgress />
+                </Box>
+              ) : (
+                <CalendarView events={events} loading={loading} error={error} />
+              )}
             </Box>
           </CardContent>
         </Card>

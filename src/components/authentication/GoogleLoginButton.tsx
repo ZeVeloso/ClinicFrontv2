@@ -3,7 +3,7 @@ import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { googleLogin } from "../../api/auth";
 import { useAuth } from "../../contexts/AuthContext";
 import { useAppNavigation } from "../../hooks/useAppNavigation";
-  
+
 const GoogleLoginButton: React.FC = () => {
   const { toDashboard } = useAppNavigation();
   const { setAccessToken } = useAuth();

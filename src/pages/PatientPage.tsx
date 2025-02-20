@@ -21,17 +21,17 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { useParams } from "react-router-dom";
-import PersonIcon from '@mui/icons-material/Person';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import AddIcon from '@mui/icons-material/Add';
+import PersonIcon from "@mui/icons-material/Person";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import AddIcon from "@mui/icons-material/Add";
 import CheckIcon from "@mui/icons-material/Check";
 import EditIcon from "@mui/icons-material/Edit";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import CancelIcon from "@mui/icons-material/Cancel";
-import MedicalInformationIcon from '@mui/icons-material/MedicalInformation';
-import ContactMailIcon from '@mui/icons-material/ContactMail';
-import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
-import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
+import MedicalInformationIcon from "@mui/icons-material/MedicalInformation";
+import ContactMailIcon from "@mui/icons-material/ContactMail";
+import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
+import FamilyRestroomIcon from "@mui/icons-material/FamilyRestroom";
 import { usePatientDetails } from "../features/patients/hooks/usePatientDetails";
 import GenericGrid from "../components/common/GenericGrid";
 import AppointmentForm from "../features/appointments/components/AppointmentForm";
@@ -62,30 +62,33 @@ const PatientDetailsPage: React.FC = () => {
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
     appointmentId: string | null;
-    action: 'cancel' | 'complete' | null;
+    action: "cancel" | "complete" | null;
   }>({ open: false, appointmentId: null, action: null });
-  
 
   if (loadingPatient)
     return (
-      <Box sx={{ 
-        display: "flex", 
-        justifyContent: "center", 
-        alignItems: "center", 
-        height: "calc(100vh - 64px)" 
-      }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "calc(100vh - 64px)",
+        }}
+      >
         <CircularProgress />
       </Box>
     );
 
   if (patientError || !patient) {
     return (
-      <Box sx={{ 
-        display: "flex", 
-        flexDirection: "column", 
-        alignItems: "center", 
-        mt: 4 
-      }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          mt: 4,
+        }}
+      >
         <Typography variant="h6" color="error">
           {patientError || "Patient not found."}
         </Typography>
@@ -131,7 +134,7 @@ const PatientDetailsPage: React.FC = () => {
           <Tabs
             value={activeTab}
             onChange={(_, newValue) => setActiveTab(newValue)}
-            sx={{ borderBottom: 1, borderColor: 'divider' }}
+            sx={{ borderBottom: 1, borderColor: "divider" }}
           >
             <Tab icon={<ContactMailIcon />} label="Personal Info" />
             <Tab icon={<MedicalInformationIcon />} label="Medical History" />
@@ -176,7 +179,9 @@ const PatientDetailsPage: React.FC = () => {
                     fullWidth
                     label="Address"
                     value={patient.address}
-                    onChange={(e) => handleFieldChange("address", e.target.value)}
+                    onChange={(e) =>
+                      handleFieldChange("address", e.target.value)
+                    }
                     onBlur={savePatientChanges}
                   />
                 </Grid>
@@ -186,7 +191,9 @@ const PatientDetailsPage: React.FC = () => {
                     label="Gender"
                     select
                     value={patient.gender}
-                    onChange={(e) => handleFieldChange("gender", e.target.value)}
+                    onChange={(e) =>
+                      handleFieldChange("gender", e.target.value)
+                    }
                     onBlur={savePatientChanges}
                   >
                     <MenuItem value="M">Male</MenuItem>
@@ -203,21 +210,35 @@ const PatientDetailsPage: React.FC = () => {
             <Box sx={{ p: 3 }}>
               <Grid container spacing={3}>
                 <Grid size={12}>
-                  <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    spacing={1}
+                    sx={{ mb: 2 }}
+                  >
                     <MedicalInformationIcon color="primary" />
-                    <Typography variant="h6">Personal Medical History</Typography>
+                    <Typography variant="h6">
+                      Personal Medical History
+                    </Typography>
                   </Stack>
                   <TextField
                     fullWidth
                     multiline
                     rows={4}
                     value={patient.personalHistory || ""}
-                    onChange={(e) => handleFieldChange("personalHistory", e.target.value)}
+                    onChange={(e) =>
+                      handleFieldChange("personalHistory", e.target.value)
+                    }
                     onBlur={savePatientChanges}
                   />
                 </Grid>
                 <Grid size={12}>
-                  <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    spacing={1}
+                    sx={{ mb: 2 }}
+                  >
                     <FitnessCenterIcon color="primary" />
                     <Typography variant="h6">Physical Activity</Typography>
                   </Stack>
@@ -226,12 +247,19 @@ const PatientDetailsPage: React.FC = () => {
                     multiline
                     rows={4}
                     value={patient.physicalActivity || ""}
-                    onChange={(e) => handleFieldChange("physicalActivity", e.target.value)}
+                    onChange={(e) =>
+                      handleFieldChange("physicalActivity", e.target.value)
+                    }
                     onBlur={savePatientChanges}
                   />
                 </Grid>
                 <Grid size={12}>
-                  <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    spacing={1}
+                    sx={{ mb: 2 }}
+                  >
                     <FamilyRestroomIcon color="primary" />
                     <Typography variant="h6">Family History</Typography>
                   </Stack>
@@ -240,7 +268,9 @@ const PatientDetailsPage: React.FC = () => {
                     multiline
                     rows={4}
                     value={patient.familyHistory || ""}
-                    onChange={(e) => handleFieldChange("familyHistory", e.target.value)}
+                    onChange={(e) =>
+                      handleFieldChange("familyHistory", e.target.value)
+                    }
                     onBlur={savePatientChanges}
                   />
                 </Grid>
@@ -251,7 +281,9 @@ const PatientDetailsPage: React.FC = () => {
           {/* Appointments Tab */}
           {activeTab === 2 && (
             <Box sx={{ p: 3 }}>
-              <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
+              <Box
+                sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}
+              >
                 <Typography variant="h6">Appointment History</Typography>
                 <Button
                   variant="contained"
@@ -264,7 +296,7 @@ const PatientDetailsPage: React.FC = () => {
                   New Appointment
                 </Button>
               </Box>
-              
+
               {loadingAppointments ? (
                 <CircularProgress />
               ) : appointmentsError ? (
@@ -281,7 +313,12 @@ const PatientDetailsPage: React.FC = () => {
                     obs: appt.obs,
                   }))}
                   columns={[
-                    { field: "date", headerName: "Date", flex: 1, minWidth: 180 },
+                    {
+                      field: "date",
+                      headerName: "Date",
+                      flex: 1,
+                      minWidth: 180,
+                    },
                     {
                       field: "status",
                       headerName: "Status",
@@ -289,13 +326,28 @@ const PatientDetailsPage: React.FC = () => {
                       minWidth: 120,
                       renderCell: ({ row }) => (
                         <Chip
-                          label={row.status === "D" ? "Done" : row.status === "N" ? "Scheduled" : "Cancelled"}
-                          color={statusChipColor[row.status as keyof typeof statusChipColor]}
+                          label={
+                            row.status === "D"
+                              ? "Done"
+                              : row.status === "N"
+                                ? "Scheduled"
+                                : "Cancelled"
+                          }
+                          color={
+                            statusChipColor[
+                              row.status as keyof typeof statusChipColor
+                            ]
+                          }
                           size="small"
                         />
                       ),
                     },
-                    { field: "motive", headerName: "Motive", flex: 1.5, minWidth: 200 },
+                    {
+                      field: "motive",
+                      headerName: "Motive",
+                      flex: 1.5,
+                      minWidth: 200,
+                    },
                     {
                       field: "actions",
                       headerName: "Actions",
@@ -319,12 +371,18 @@ const PatientDetailsPage: React.FC = () => {
                               <IconButton
                                 size="small"
                                 color="success"
-                                onClick={() => setConfirmDialog({
-                                  open: true,
-                                  appointmentId: row.id,
-                                  action: 'complete'
-                                })}
-                                disabled={row.status === 'C' || row.status === 'D' || actionLoading[row.id]}
+                                onClick={() =>
+                                  setConfirmDialog({
+                                    open: true,
+                                    appointmentId: row.id,
+                                    action: "complete",
+                                  })
+                                }
+                                disabled={
+                                  row.status === "C" ||
+                                  row.status === "D" ||
+                                  actionLoading[row.id]
+                                }
                               >
                                 {actionLoading[row.id] ? (
                                   <CircularProgress size={20} />
@@ -339,12 +397,16 @@ const PatientDetailsPage: React.FC = () => {
                               <IconButton
                                 size="small"
                                 color="error"
-                                onClick={() => setConfirmDialog({
-                                  open: true,
-                                  appointmentId: row.id,
-                                  action: 'cancel'
-                                })}
-                                disabled={row.status === 'C' || actionLoading[row.id]}
+                                onClick={() =>
+                                  setConfirmDialog({
+                                    open: true,
+                                    appointmentId: row.id,
+                                    action: "cancel",
+                                  })
+                                }
+                                disabled={
+                                  row.status === "C" || actionLoading[row.id]
+                                }
                               >
                                 {actionLoading[row.id] ? (
                                   <CircularProgress size={20} />
@@ -382,39 +444,57 @@ const PatientDetailsPage: React.FC = () => {
         </Paper>
         <Dialog
           open={confirmDialog.open}
-          onClose={() => setConfirmDialog({ open: false, appointmentId: null, action: null })}
+          onClose={() =>
+            setConfirmDialog({ open: false, appointmentId: null, action: null })
+          }
         >
           <DialogTitle>
-            {confirmDialog.action === 'cancel' ? 'Cancel Appointment' : 'Complete Appointment'}
+            {confirmDialog.action === "cancel"
+              ? "Cancel Appointment"
+              : "Complete Appointment"}
           </DialogTitle>
           <DialogContent>
             <Typography>
-              Are you sure you want to {confirmDialog.action === 'cancel' ? 'cancel' : 'mark as complete'} this appointment?
+              Are you sure you want to{" "}
+              {confirmDialog.action === "cancel"
+                ? "cancel"
+                : "mark as complete"}{" "}
+              this appointment?
             </Typography>
           </DialogContent>
           <DialogActions>
             <Button
-              onClick={() => setConfirmDialog({ open: false, appointmentId: null, action: null })}
+              onClick={() =>
+                setConfirmDialog({
+                  open: false,
+                  appointmentId: null,
+                  action: null,
+                })
+              }
               color="inherit"
             >
               No, Keep it
             </Button>
             <Button
-              onClick={() => confirmDialog.appointmentId && handleStatusAction(
-                confirmDialog.appointmentId,
-                confirmDialog.action!
-              )}
-              color={confirmDialog.action === 'cancel' ? 'error' : 'success'}
+              onClick={() =>
+                confirmDialog.appointmentId &&
+                handleStatusAction(
+                  confirmDialog.appointmentId,
+                  confirmDialog.action!
+                )
+              }
+              color={confirmDialog.action === "cancel" ? "error" : "success"}
               variant="contained"
               autoFocus
             >
-              Yes, {confirmDialog.action === 'cancel' ? 'Cancel' : 'Complete'} it
+              Yes, {confirmDialog.action === "cancel" ? "Cancel" : "Complete"}{" "}
+              it
             </Button>
           </DialogActions>
-        </Dialog> 
+        </Dialog>
         {/* Appointment Dialog */}
-        <Dialog 
-          open={isFormOpen} 
+        <Dialog
+          open={isFormOpen}
           onClose={() => setIsFormOpen(false)}
           maxWidth="md"
           fullWidth

@@ -28,21 +28,21 @@ const LandingPage: React.FC = () => {
   const theme = useTheme();
   const { toAppointments } = useAppNavigation();
 
-
   const features = [
     {
       title: "Online Booking",
-      description: "Schedule appointments 24/7 from anywhere",
+      description: "Schedule appointments your patients appointments",
       icon: <AccessTime />,
     },
     {
       title: "Secure Platform",
-      description: "Your medical data is protected with the highest security standards",
+      description:
+        "Your patients data is protected with the highest security standards",
       icon: <Security />,
     },
     {
       title: "Patient History",
-      description: "Access your complete medical history in one place",
+      description: "Access your appointments history in one place",
       icon: <Timeline />,
     },
   ];
@@ -51,12 +51,20 @@ const LandingPage: React.FC = () => {
     {
       title: "2 Week Free Trial",
       price: "$0",
-      features: ["Patient Appointment", "Appointment Reminder", "Money Management"],
+      features: [
+        "Patient Appointment",
+        "Appointment Reminder",
+        "Money Management",
+      ],
     },
     {
       title: "Plan",
       price: "$10",
-      features: ["Patient Appointment", "Appointment Reminder", "Money Management"],
+      features: [
+        "Patient Appointment",
+        "Appointment Reminder",
+        "Money Management",
+      ],
     },
   ];
 
@@ -80,15 +88,15 @@ const LandingPage: React.FC = () => {
             bottom: 0,
             background: "rgba(255,255,255,0.05)",
             transform: "skewY(-5deg)",
-          }
+          },
         }}
       >
         <Container maxWidth="lg">
           <Grid container spacing={4} alignItems="center">
             <Grid item xs={12} md={6}>
               <Box sx={{ animation: "fadeIn 1s ease-out" }}>
-                <Typography 
-                  variant="h2" 
+                <Typography
+                  variant="h2"
                   gutterBottom
                   sx={{
                     fontWeight: 700,
@@ -98,7 +106,7 @@ const LandingPage: React.FC = () => {
                   Your Health, Our Priority
                 </Typography>
                 <Typography variant="h5" paragraph sx={{ mb: 4 }}>
-                  Modern healthcare solutions with a personal touch
+                  Effortless Appointment Management, Anytime, Anywhere.
                 </Typography>
                 <Button
                   variant="contained"
@@ -130,13 +138,18 @@ const LandingPage: React.FC = () => {
 
       {/* Features Section */}
       <Container maxWidth="lg" sx={{ mb: 8 }}>
-        <Typography variant="h3" align="center" gutterBottom sx={{ fontWeight: 700 }}>
+        <Typography
+          variant="h3"
+          align="center"
+          gutterBottom
+          sx={{ fontWeight: 700 }}
+        >
           Why Choose Us
         </Typography>
         <Grid container spacing={4} sx={{ mt: 4 }}>
           {features.map((feature) => (
             <Grid item xs={12} md={4} key={feature.title}>
-              <Card 
+              <Card
                 elevation={0}
                 sx={{
                   height: "100%",
@@ -148,8 +161,8 @@ const LandingPage: React.FC = () => {
                 }}
               >
                 <CardContent sx={{ textAlign: "center", py: 4 }}>
-                  <Box 
-                    sx={{ 
+                  <Box
+                    sx={{
                       mb: 3,
                       color: "primary.main",
                       transform: "scale(1.5)",
@@ -157,7 +170,11 @@ const LandingPage: React.FC = () => {
                   >
                     {feature.icon}
                   </Box>
-                  <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
+                  <Typography
+                    variant="h5"
+                    gutterBottom
+                    sx={{ fontWeight: 600 }}
+                  >
                     {feature.title}
                   </Typography>
                   <Typography color="textSecondary">
@@ -173,13 +190,18 @@ const LandingPage: React.FC = () => {
       {/* Pricing Section */}
       <Box sx={{ bgcolor: "grey.50", py: 8 }}>
         <Container maxWidth="lg">
-          <Typography variant="h3" align="center" gutterBottom sx={{ fontWeight: 700 }}>
+          <Typography
+            variant="h3"
+            align="center"
+            gutterBottom
+            sx={{ fontWeight: 700 }}
+          >
             Pricing Plans
           </Typography>
           <Grid container spacing={4} sx={{ mt: 4 }}>
             {pricingPlans.map((plan) => (
               <Grid item xs={12} md={6} key={plan.title}>
-                <Card 
+                <Card
                   elevation={3}
                   sx={{
                     position: "relative",
@@ -231,7 +253,7 @@ const LandingPage: React.FC = () => {
                     >
                       Choose Plan
                     </Button>
-                    </CardContent>
+                  </CardContent>
                 </Card>
               </Grid>
             ))}
@@ -241,18 +263,31 @@ const LandingPage: React.FC = () => {
 
       {/* Contact Section */}
       <Container maxWidth="lg" sx={{ py: 8 }}>
-        <Typography variant="h3" align="center" gutterBottom sx={{ fontWeight: 700 }}>
+        <Typography
+          variant="h3"
+          align="center"
+          gutterBottom
+          sx={{ fontWeight: 700 }}
+        >
           Contact Us
         </Typography>
         <Grid container spacing={4} sx={{ mt: 4 }}>
           {[
             { icon: <Phone />, title: "Phone", content: "+1 (555) 123-4567" },
-            { icon: <Email />, title: "Email", content: "contact@healthclinic.com" },
-            { icon: <LocationOn />, title: "Location", content: "123 Health Street, Medical City, MC 12345" }
+            {
+              icon: <Email />,
+              title: "Email",
+              content: "contact@healthclinic.com",
+            },
+            {
+              icon: <LocationOn />,
+              title: "Location",
+              content: "123 Health Street, Medical City, MC 12345",
+            },
           ].map((item) => (
             <Grid item xs={12} md={4} key={item.title}>
-              <Box 
-                sx={{ 
+              <Box
+                sx={{
                   textAlign: "center",
                   p: 3,
                   borderRadius: 2,
@@ -260,16 +295,16 @@ const LandingPage: React.FC = () => {
                   "&:hover": {
                     bgcolor: "grey.50",
                     transform: "translateY(-5px)",
-                  }
+                  },
                 }}
               >
-                <Box 
-                  sx={{ 
+                <Box
+                  sx={{
                     color: "primary.main",
                     display: "inline-flex",
                     p: 2,
                     borderRadius: "50%",
-                    mb: 2
+                    mb: 2,
                   }}
                 >
                   {React.cloneElement(item.icon, { sx: { fontSize: 40 } })}
@@ -277,9 +312,7 @@ const LandingPage: React.FC = () => {
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
                   {item.title}
                 </Typography>
-                <Typography color="text.secondary">
-                  {item.content}
-                </Typography>
+                <Typography color="text.secondary">{item.content}</Typography>
               </Box>
             </Grid>
           ))}

@@ -22,7 +22,9 @@ export const usePatientDetails = (patientId: string) => {
   // Used to update patient fields before saving changes
   const [editedFields, setEditedFields] = useState<Partial<Patient>>({});
 
-  const [actionLoading, setActionLoading] = useState<{ [key: string]: boolean }>({});
+  const [actionLoading, setActionLoading] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   const { showToast } = useToast();
 
@@ -121,10 +123,14 @@ export const usePatientDetails = (patientId: string) => {
     }
   };
 
-  const handleStatusAction = async (id: string, action: 'cancel' | 'complete', onSuccess?: () => void) => {
-    setActionLoading(prev => ({ ...prev, [id]: true }));
+  const handleStatusAction = async (
+    id: string,
+    action: "cancel" | "complete",
+    onSuccess?: () => void
+  ) => {
+    setActionLoading((prev) => ({ ...prev, [id]: true }));
     try {
-      if (action === 'cancel') {
+      if (action === "cancel") {
         await cancelAppointment(id);
         showToast("Appointment cancelled successfully", "success");
       } else {
@@ -136,7 +142,7 @@ export const usePatientDetails = (patientId: string) => {
     } catch (error) {
       showToast("Error updating appointment", "error");
     } finally {
-      setActionLoading(prev => ({ ...prev, [id]: false }));
+      setActionLoading((prev) => ({ ...prev, [id]: false }));
     }
   };
 

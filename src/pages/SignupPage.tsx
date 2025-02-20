@@ -126,7 +126,8 @@ const SignupPage: React.FC = () => {
             color="text.secondary"
             sx={{ mb: 3, textAlign: "center" }}
           >
-            Join our healthcare platform to manage your medical records and appointments
+            Join our healthcare platform to manage your medical records and
+            appointments
           </Typography>
 
           {error && (
@@ -203,8 +204,14 @@ const SignupPage: React.FC = () => {
               />
             </FormControl>
 
-            <FormControl fullWidth variant="outlined" error={!!confirmPasswordError}>
-              <InputLabel htmlFor="confirm-password">Confirm Password</InputLabel>
+            <FormControl
+              fullWidth
+              variant="outlined"
+              error={!!confirmPasswordError}
+            >
+              <InputLabel htmlFor="confirm-password">
+                Confirm Password
+              </InputLabel>
               <OutlinedInput
                 id="confirm-password"
                 type={showPassword ? "text" : "password"}
