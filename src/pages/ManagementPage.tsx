@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Box,
   Container,
@@ -8,19 +8,9 @@ import {
   Typography,
   ButtonGroup,
   Button,
-  CircularProgress,
 } from "@mui/material";
+import { TrendingUp, Group, AttachMoney, Event } from "@mui/icons-material";
 import {
-  Timeline,
-  TrendingUp,
-  Group,
-  AttachMoney,
-  Event,
-  Assessment,
-} from "@mui/icons-material";
-import {
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -37,7 +27,6 @@ const ManagementPage = () => {
   const [timeRange, setTimeRange] = useState<"week" | "month" | "year">(
     "month"
   );
-  const [loading, setLoading] = useState(false);
 
   // Mock data - replace with actual API calls
   const stats = {
@@ -211,7 +200,7 @@ const ManagementPage = () => {
                     paddingAngle={5}
                     dataKey="value"
                   >
-                    {ageDistribution.map((entry, index) => (
+                    {ageDistribution.map((_, index) => (
                       <Cell
                         key={`cell-${index}`}
                         fill={COLORS[index % COLORS.length]}
