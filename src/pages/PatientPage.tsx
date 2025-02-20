@@ -554,7 +554,13 @@ const PatientDetailsPage: React.FC = () => {
                 confirmDialog.appointmentId &&
                 handleStatusAction(
                   confirmDialog.appointmentId,
-                  confirmDialog.action!
+                  confirmDialog.action!,
+                  () =>
+                    setConfirmDialog({
+                      open: false,
+                      appointmentId: null,
+                      action: null,
+                    })
                 )
               }
               color={confirmDialog.action === "cancel" ? "error" : "success"}

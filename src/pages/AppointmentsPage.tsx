@@ -15,6 +15,8 @@ import {
   Tooltip,
   MenuItem,
   DialogActions,
+  Stack,
+  alpha,
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -22,6 +24,7 @@ import {
   Edit as EditIcon,
   Check as CheckIcon,
   Cancel as CancelIcon,
+  FilterList as FilterIcon,
 } from "@mui/icons-material";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import GenericGrid from "../components/common/GenericGrid";
@@ -34,6 +37,7 @@ import {
 import { updateAppointment } from "../api/appointments";
 import { useToast } from "../contexts/ToastContext";
 import { useAppNavigation } from "../hooks/useAppNavigation";
+import theme from "../theme";
 
 const AppointmentsPage: React.FC = () => {
   const { toAppointmentDetails } = useAppNavigation();
@@ -246,36 +250,62 @@ const AppointmentsPage: React.FC = () => {
   ];
 
   return (
-    <Box sx={{ padding: 3, backgroundColor: "#f9f9f9" }}>
-      {/* Header with title and Add button */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 3,
-        }}
-      >
-        <Typography variant="h4">Appointments</Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AddIcon />}
-          onClick={() => {
-            setCurrentAppointment(null);
-            setOpenDialog(true);
+    <Box
+      sx={{
+        padding: 3,
+        backgroundColor: alpha(theme.palette.background.default, 0.98),
+        minHeight: "100vh",
+      }}
+    >
+      {/* Enhanced Header Section */}
+      <Box sx={{ mb: 4 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3,
           }}
         >
-          Add
-        </Button>
+          <Typography variant="h4" sx={{ fontWeight: 600 }}>
+            Appointments
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<AddIcon />}
+            onClick={() => setOpenDialog(true)}
+            sx={{
+              borderRadius: 2,
+              textTransform: "none",
+              px: 3,
+            }}
+          >
+            Add
+          </Button>
+        </Box>
       </Box>
 
-      {/* Filter inputs */}
-      <Card sx={{ mb: 4, p: 2 }}>
+      {/* Enhanced Filter Section */}
+      <Card
+        elevation={2}
+        sx={{
+          mb: 4,
+          p: { xs: 2, sm: 3 },
+          backgroundColor: "background.paper",
+          borderRadius: 2,
+        }}
+      >
+        <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
+          <FilterIcon color="primary" />
+          <Typography variant="subtitle1" fontWeight={500}>
+            Filters
+          </Typography>
+        </Stack>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6} md={3}>
             <TextField
-              label="Search by Patient"
+              label="Patient Name"
               variant="outlined"
               fullWidth
               size="small"
@@ -284,7 +314,7 @@ const AppointmentsPage: React.FC = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon />
+                    <SearchIcon sx={{ color: "text.secondary" }} />
                   </InputAdornment>
                 ),
               }}
@@ -292,7 +322,7 @@ const AppointmentsPage: React.FC = () => {
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <TextField
-              label="Search by Phone"
+              label="Phone Number"
               variant="outlined"
               fullWidth
               size="small"
@@ -301,7 +331,7 @@ const AppointmentsPage: React.FC = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon />
+                    <SearchIcon sx={{ color: "text.secondary" }} />
                   </InputAdornment>
                 ),
               }}
@@ -329,23 +359,73 @@ const AppointmentsPage: React.FC = () => {
               value={filters.status}
               onChange={(e) => handleFilterChange("status", e.target.value)}
             >
-              <MenuItem value="">All</MenuItem>
-              <MenuItem value="N">Scheduled</MenuItem>
-              <MenuItem value="D">Completed</MenuItem>
-              <MenuItem value="C">Cancelled</MenuItem>
+              <MenuItem value="">All Status</MenuItem>
+              <MenuItem value="N">
+                <Chip
+                  size="small"
+                  icon={<ScheduleIcon />}
+                  label="Scheduled"
+                  color="primary"
+                  sx={{ mr: 1 }}
+                />
+              </MenuItem>
+              <MenuItem value="D">
+                <Chip
+                  size="small"
+                  icon={<CheckIcon />}
+                  label="Completed"
+                  color="success"
+                  sx={{ mr: 1 }}
+                />
+              </MenuItem>
+              <MenuItem value="C">
+                <Chip
+                  size="small"
+                  icon={<CancelIcon />}
+                  label="Cancelled"
+                  color="error"
+                  sx={{ mr: 1 }}
+                />
+              </MenuItem>
             </TextField>
           </Grid>
         </Grid>
       </Card>
 
-      {/* Appointments grid */}
-      <Card sx={{ p: 2, overflowX: "auto", whiteSpace: "nowrap" }}>
+      {/* Enhanced Appointments Grid */}
+      <Card
+        elevation={2}
+        sx={{
+          p: { xs: 2, sm: 3 },
+          borderRadius: 2,
+          backgroundColor: "background.paper",
+          minHeight: 400,
+        }}
+      >
         {loading ? (
-          <CircularProgress sx={{ display: "block", mx: "auto", my: 2 }} />
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: 400,
+            }}
+          >
+            <CircularProgress />
+          </Box>
         ) : error ? (
-          <Typography variant="body1" color="error" textAlign="center">
-            {error}
-          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: 400,
+            }}
+          >
+            <Typography variant="body1" color="error">
+              {error}
+            </Typography>
+          </Box>
         ) : (
           <GenericGrid
             rows={rows}
@@ -355,29 +435,59 @@ const AppointmentsPage: React.FC = () => {
               onPaginationModelChange: handlePaginationChange,
               rowCount: totalAppointments,
               paginationMode: "server",
+              sx: {
+                "& .MuiDataGrid-cell": {
+                  fontSize: "0.9rem",
+                },
+                "& .MuiDataGrid-columnHeader": {
+                  backgroundColor: alpha(theme.palette.primary.main, 0.05),
+                },
+              },
             }}
           />
         )}
       </Card>
+
+      {/* Enhanced Confirmation Dialog */}
       <Dialog
         open={confirmDialog.open}
         onClose={() =>
           setConfirmDialog({ open: false, appointmentId: null, action: null })
         }
+        PaperProps={{
+          sx: { borderRadius: 2 },
+        }}
       >
-        <DialogTitle>
-          {confirmDialog.action === "cancel"
-            ? "Cancel Appointment"
-            : "Complete Appointment"}
+        <DialogTitle
+          sx={{
+            pb: 1,
+            borderBottom: 1,
+            borderColor: "divider",
+          }}
+        >
+          <Stack direction="row" alignItems="center" spacing={1}>
+            {confirmDialog.action === "cancel" ? (
+              <CancelIcon color="error" />
+            ) : (
+              <CheckIcon color="success" />
+            )}
+            <Typography variant="h6">
+              {confirmDialog.action === "cancel"
+                ? "Cancel Appointment"
+                : "Complete Appointment"}
+            </Typography>
+          </Stack>
         </DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ py: 3 }}>
           <Typography>
             Are you sure you want to{" "}
             {confirmDialog.action === "cancel" ? "cancel" : "mark as complete"}{" "}
             this appointment?
           </Typography>
         </DialogContent>
-        <DialogActions>
+        <DialogActions
+          sx={{ px: 3, py: 2, borderTop: 1, borderColor: "divider" }}
+        >
           <Button
             onClick={() =>
               setConfirmDialog({
@@ -391,36 +501,51 @@ const AppointmentsPage: React.FC = () => {
             No, Keep it
           </Button>
           <Button
-            onClick={() =>
+            onClick={() => {
               confirmDialog.appointmentId &&
-              handleStatusAction(
-                confirmDialog.appointmentId,
-                confirmDialog.action!,
-                () =>
-                  setConfirmDialog({
-                    open: false,
-                    appointmentId: null,
-                    action: null,
-                  })
-              )
-            }
-            color={confirmDialog.action === "cancel" ? "error" : "success"}
+                handleStatusAction(
+                  confirmDialog.appointmentId,
+                  confirmDialog.action!,
+                  () =>
+                    setConfirmDialog({
+                      open: false,
+                      appointmentId: null,
+                      action: null,
+                    })
+                );
+            }}
             variant="contained"
+            color={confirmDialog.action === "cancel" ? "error" : "success"}
             autoFocus
           >
             Yes, {confirmDialog.action === "cancel" ? "Cancel" : "Complete"} it
           </Button>
         </DialogActions>
       </Dialog>
-      {/* Dialog popup for AppointmentForm */}
+
+      {/* Appointment Form Dialog */}
       <Dialog
         open={openDialog}
         onClose={() => setOpenDialog(false)}
         fullWidth
         maxWidth="sm"
+        PaperProps={{
+          sx: { borderRadius: 2 },
+        }}
       >
-        <DialogTitle>
-          {currentAppointment ? "Edit Appointment" : "Schedule Appointment"}
+        <DialogTitle
+          sx={{
+            pb: 2,
+            borderBottom: 1,
+            borderColor: "divider",
+          }}
+        >
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <ScheduleIcon color="primary" />
+            <Typography variant="h6">
+              {currentAppointment ? "Edit Appointment" : "New Appointment"}
+            </Typography>
+          </Stack>
         </DialogTitle>
         <DialogContent>
           <AppointmentForm

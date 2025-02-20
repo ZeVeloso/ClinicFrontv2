@@ -1,6 +1,6 @@
 import React from "react";
 import { useForm, Controller } from "react-hook-form";
-import { TextField, Box, Button, Grid, Typography } from "@mui/material";
+import { TextField, Box, Button, Grid, Typography, Stack } from "@mui/material";
 import {
   DatePicker,
   TimePicker,
@@ -9,6 +9,10 @@ import {
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import EventIcon from "@mui/icons-material/Event";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import SubjectIcon from "@mui/icons-material/Subject";
+import NotesIcon from "@mui/icons-material/Notes";
 
 dayjs.extend(customParseFormat);
 
@@ -56,11 +60,9 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
     obs: initialValues.obs || "",
   };
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<AppointmentFormValues>({ defaultValues });
+  const { control, handleSubmit } = useForm<AppointmentFormValues>({
+    defaultValues,
+  });
 
   const onFormSubmit = (data: AppointmentFormValues) => {
     if (data.date && data.time) {
@@ -83,50 +85,79 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <form onSubmit={handleSubmit(onFormSubmit)}>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <Typography variant="h6" textAlign="center">
-            {defaultValues.id ? "Edit Appointment" : "Schedule Appointment"}
-          </Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: { xs: 2, sm: 3 },
+            pt: { xs: 1, sm: 2 },
+          }}
+        >
+          {/* DateTime Section */}
+          <Grid container spacing={{ xs: 2, sm: 3 }}>
+            <Grid item xs={12} sm={6}>
+              <Stack
+                direction="row"
+                alignItems="center"
+                spacing={1}
+                sx={{ mb: 1 }}
+              >
+                <EventIcon color="primary" fontSize="small" />
+                <Typography variant="subtitle2">Date *</Typography>
+              </Stack>
               <Controller
                 name="date"
                 control={control}
                 rules={{ required: "Date is required" }}
-                render={({ field }) => (
+                render={({ field, fieldState: { error } }) => (
                   <DatePicker
-                    label="Date"
                     value={field.value}
                     onChange={field.onChange}
                     slotProps={{
                       textField: {
                         fullWidth: true,
-                        required: true,
-                        error: !!errors.date,
-                        helperText: errors.date?.message,
+                        error: !!error,
+                        helperText: error?.message,
+                        sx: {
+                          "& .MuiInputBase-input": {
+                            fontSize: { xs: "0.9rem", sm: "1rem" },
+                          },
+                        },
                       },
                     }}
                   />
                 )}
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={6}>
+              <Stack
+                direction="row"
+                alignItems="center"
+                spacing={1}
+                sx={{ mb: 1 }}
+              >
+                <AccessTimeIcon color="primary" fontSize="small" />
+                <Typography variant="subtitle2">Time *</Typography>
+              </Stack>
               <Controller
                 name="time"
                 control={control}
                 rules={{ required: "Time is required" }}
-                render={({ field }) => (
+                render={({ field, fieldState: { error } }) => (
                   <TimePicker
-                    label="Time"
                     value={field.value}
                     onChange={field.onChange}
                     ampm={false}
                     slotProps={{
                       textField: {
                         fullWidth: true,
-                        required: true,
-                        error: !!errors.time,
-                        helperText: errors.time?.message,
+                        error: !!error,
+                        helperText: error?.message,
+                        sx: {
+                          "& .MuiInputBase-input": {
+                            fontSize: { xs: "0.9rem", sm: "1rem" },
+                          },
+                        },
                       },
                     }}
                   />
@@ -134,39 +165,105 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
               />
             </Grid>
           </Grid>
-          <Controller
-            name="motive"
-            control={control}
-            rules={{ required: "Motive is required" }}
-            render={({ field }) => (
-              <TextField
-                label="Motive"
-                fullWidth
-                required
-                {...field}
-                error={!!errors.motive}
-                helperText={errors.motive?.message}
-              />
-            )}
-          />
-          <Controller
-            name="obs"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                label="Observations"
-                fullWidth
-                multiline
-                rows={3}
-                {...field}
-              />
-            )}
-          />
-          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
-            <Button onClick={onCancel} color="secondary">
+
+          {/* Motive Section */}
+          <Box>
+            <Stack
+              direction="row"
+              alignItems="center"
+              spacing={1}
+              sx={{ mb: 1 }}
+            >
+              <SubjectIcon color="primary" fontSize="small" />
+              <Typography variant="subtitle2">Motive *</Typography>
+            </Stack>
+            <Controller
+              name="motive"
+              control={control}
+              rules={{ required: "Motive is required" }}
+              render={({ field, fieldState: { error } }) => (
+                <TextField
+                  {...field}
+                  fullWidth
+                  error={!!error}
+                  helperText={error?.message}
+                  placeholder="Brief description of the appointment"
+                  sx={{
+                    "& .MuiInputBase-input": {
+                      fontSize: { xs: "0.9rem", sm: "1rem" },
+                    },
+                  }}
+                />
+              )}
+            />
+          </Box>
+
+          {/* Observations Section */}
+          <Box>
+            <Stack
+              direction="row"
+              alignItems="center"
+              spacing={1}
+              sx={{ mb: 1 }}
+            >
+              <NotesIcon color="primary" fontSize="small" />
+              <Typography variant="subtitle2">Observations</Typography>
+            </Stack>
+            <Controller
+              name="obs"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  fullWidth
+                  multiline
+                  rows={4}
+                  placeholder="Additional notes or observations"
+                  sx={{
+                    "& .MuiInputBase-input": {
+                      fontSize: { xs: "0.9rem", sm: "1rem" },
+                    },
+                  }}
+                />
+              )}
+            />
+          </Box>
+
+          {/* Action Buttons */}
+          <Box
+            sx={{
+              display: "flex",
+              gap: { xs: 1, sm: 2 },
+              justifyContent: "flex-end",
+              mt: { xs: 1, sm: 2 },
+              pt: { xs: 1, sm: 2 },
+              borderTop: 1,
+              borderColor: "divider",
+              flexDirection: { xs: "column", sm: "row" },
+            }}
+          >
+            <Button
+              onClick={onCancel}
+              variant="outlined"
+              fullWidth={false}
+              sx={{
+                width: { xs: "100%", sm: "auto" },
+                py: { xs: 1 },
+                px: { xs: 2, sm: 3 },
+              }}
+            >
               Cancel
             </Button>
-            <Button type="submit" variant="contained" color="primary">
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              sx={{
+                width: { xs: "100%", sm: "auto" },
+                py: { xs: 1 },
+                px: { xs: 2, sm: 3 },
+              }}
+            >
               Save
             </Button>
           </Box>

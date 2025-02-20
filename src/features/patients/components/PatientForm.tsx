@@ -36,9 +36,22 @@ const PatientForm: React.FC<PatientFormProps> = ({
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={4}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: { xs: 2, sm: 3 }, // Responsive gap
+        width: "100%",
+        maxWidth: "100%",
+        pt: { xs: 2, sm: 3 },
+      }}
+    >
+      <Grid container spacing={{ xs: 1, sm: 2 }}>
+        {" "}
+        {/* Responsive spacing */}
+        <Grid item xs={12} sm={6} md={4}>
+          {" "}
+          {/* Responsive grid */}
           <TextField
             label="Name"
             name="name"
@@ -46,10 +59,15 @@ const PatientForm: React.FC<PatientFormProps> = ({
             fullWidth
             value={formValues.name}
             onChange={handleChange}
-            margin="normal"
+            required // Add required field indication
+            sx={{
+              "& .MuiInputBase-input": {
+                fontSize: { xs: "0.9rem", sm: "1rem" }, // Responsive font
+              },
+            }}
           />
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} sm={6} md={4}>
           <TextField
             label="Birth Date"
             name="birth"
@@ -57,12 +75,20 @@ const PatientForm: React.FC<PatientFormProps> = ({
             fullWidth
             value={formValues.birth}
             onChange={handleChange}
-            margin="normal"
+            required
             type="date"
-            InputLabelProps={{ shrink: true }}
+            InputLabelProps={{
+              shrink: true,
+              sx: { fontSize: { xs: "0.9rem", sm: "1rem" } },
+            }}
+            sx={{
+              "& .MuiInputBase-input": {
+                fontSize: { xs: "0.9rem", sm: "1rem" },
+              },
+            }}
           />
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} sm={6} md={4}>
           <TextField
             label="Phone"
             name="phone"
@@ -70,13 +96,16 @@ const PatientForm: React.FC<PatientFormProps> = ({
             fullWidth
             value={formValues.phone}
             onChange={handleChange}
-            margin="normal"
+            required
             type="tel"
+            sx={{
+              "& .MuiInputBase-input": {
+                fontSize: { xs: "0.9rem", sm: "1rem" },
+              },
+            }}
           />
         </Grid>
-      </Grid>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} sm={6} md={4}>
           <TextField
             label="Gender"
             name="gender"
@@ -84,15 +113,20 @@ const PatientForm: React.FC<PatientFormProps> = ({
             fullWidth
             value={formValues.gender}
             onChange={handleChange}
-            margin="normal"
+            required
             select
+            sx={{
+              "& .MuiInputBase-input": {
+                fontSize: { xs: "0.9rem", sm: "1rem" },
+              },
+            }}
           >
             <MenuItem value="male">Male</MenuItem>
             <MenuItem value="female">Female</MenuItem>
             <MenuItem value="other">Other</MenuItem>
           </TextField>
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} sm={6} md={4}>
           <TextField
             label="Job"
             name="job"
@@ -100,7 +134,11 @@ const PatientForm: React.FC<PatientFormProps> = ({
             fullWidth
             value={formValues.job}
             onChange={handleChange}
-            margin="normal"
+            sx={{
+              "& .MuiInputBase-input": {
+                fontSize: { xs: "0.9rem", sm: "1rem" },
+              },
+            }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -111,13 +149,46 @@ const PatientForm: React.FC<PatientFormProps> = ({
             fullWidth
             value={formValues.address}
             onChange={handleChange}
-            margin="normal"
+            multiline // Allow multiple lines for address
+            rows={2}
+            sx={{
+              "& .MuiInputBase-input": {
+                fontSize: { xs: "0.9rem", sm: "1rem" },
+              },
+            }}
           />
         </Grid>
       </Grid>
-      <Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}>
-        <Button onClick={onCancel}>Cancel</Button>
-        <Button variant="contained" color="primary" onClick={handleSubmit}>
+
+      <Box
+        sx={{
+          display: "flex",
+          gap: { xs: 1, sm: 2 },
+          justifyContent: "flex-end",
+          mt: { xs: 2, sm: 3 }, // Add top margin for buttons
+          flexDirection: { xs: "column", sm: "row" }, // Stack buttons on mobile
+        }}
+      >
+        <Button
+          onClick={onCancel}
+          variant="outlined"
+          fullWidth={false}
+          sx={{
+            width: { xs: "100%", sm: "auto" }, // Full width on mobile
+            py: { xs: 1, sm: "inherit" }, // Taller touch target on mobile
+          }}
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSubmit}
+          sx={{
+            width: { xs: "100%", sm: "auto" },
+            py: { xs: 1 },
+          }}
+        >
           Save
         </Button>
       </Box>
