@@ -177,7 +177,7 @@ const LandingPage: React.FC = () => {
             Pricing Plans
           </Typography>
           <Grid container spacing={4} sx={{ mt: 4 }}>
-            {pricingPlans.map((plan, index) => (
+            {pricingPlans.map((plan) => (
               <Grid item xs={12} md={6} key={plan.title}>
                 <Card 
                   elevation={3}

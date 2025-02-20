@@ -1,5 +1,4 @@
 import axiosInstance from "./axiosInstance";
-import { Patient } from "../features/patients/types";
 import { Appointment } from "../features/appointments/types";
 
 export const getAppointments = async ({
