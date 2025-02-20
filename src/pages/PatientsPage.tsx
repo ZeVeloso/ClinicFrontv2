@@ -9,6 +9,7 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
+  Stack,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import {
@@ -17,6 +18,7 @@ import {
   Search as SearchIcon,
   Person as PersonIcon,
   Edit as EditIcon,
+  FilterList as FilterIcon,
 } from "@mui/icons-material";
 import InputAdornment from "@mui/material/InputAdornment";
 import GenericGrid from "../components/common/GenericGrid";
@@ -121,29 +123,10 @@ const PatientsPage: React.FC = () => {
     phone: patient.phone,
   }));
 
-  const stats = [
-    { label: "Total Patients", value: totalPatients },
-    { label: "New This Month", value: "28" },
-    { label: "Active Patients", value: "156" },
-  ];
-
   return (
     <Box sx={{ padding: 3, backgroundColor: "#f5f7fb" }}>
       {/* Improved header section */}
       <Box sx={{ mb: 4 }}>
-        <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-          <Typography
-            sx={{
-              fontSize: "12px",
-              color: "text.secondary",
-              display: "flex",
-              alignItems: "center",
-              gap: 1,
-            }}
-          >
-            Dashboard / <Typography color="primary">Patients</Typography>
-          </Typography>
-        </Box>
         <Box
           sx={{
             display: "flex",
@@ -153,7 +136,7 @@ const PatientsPage: React.FC = () => {
           }}
         >
           <Typography variant="h4" sx={{ fontWeight: 600 }}>
-            Patient Management
+            Patients
           </Typography>
           <Button
             variant="contained"
@@ -166,38 +149,9 @@ const PatientsPage: React.FC = () => {
               px: 3,
             }}
           >
-            Add Patient
+            Add
           </Button>
         </Box>
-
-        {/* Stats Cards */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          {stats.map((stat) => (
-            <Grid item xs={12} md={4} key={stat.label}>
-              <Card
-                sx={{
-                  p: 3,
-                  display: "flex",
-                  flexDirection: "column",
-                  bgcolor: "background.paper",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
-                  borderRadius: 2,
-                }}
-              >
-                <Typography
-                  color="text.secondary"
-                  variant="body2"
-                  sx={{ mb: 1 }}
-                >
-                  {stat.label}
-                </Typography>
-                <Typography variant="h4" sx={{ fontWeight: 600 }}>
-                  {stat.value}
-                </Typography>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
       </Box>
 
       {/* Improved search filters */}
@@ -209,6 +163,12 @@ const PatientsPage: React.FC = () => {
           boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
         }}
       >
+        <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
+          <FilterIcon color="primary" />
+          <Typography variant="subtitle1" fontWeight={500}>
+            Filters
+          </Typography>
+        </Stack>
         <Grid container spacing={3}>
           <Grid item xs={12} md={5}>
             <TextField
