@@ -8,10 +8,14 @@ import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import Button from "@mui/material/Button";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
+import { motion } from "framer-motion";
+import { useLocation } from "react-router-dom";
+import { alpha } from "@mui/material/styles";
 
 import { appMenuItems, profileMenuItems } from "../../config/menuConfig";
 import MenuItems from "./MenuItems";
 import { useAuth } from "../../contexts/AuthContext";
+import clinicLogo from "../../assets/Clinic+.png";
 
 interface SidebarProps {
   mobileOpen: boolean;
@@ -23,86 +27,134 @@ const drawerWidth = 240;
 const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, toggleDrawer }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const location = useLocation();
 
   const drawerContent = (
-    <Stack sx={{ height: "100%" }}>
-      {/* Header with Background Image */}
+    <Stack
+      sx={{
+        height: "100%",
+        bgcolor: "background.paper",
+        borderRight: "1px solid",
+        borderColor: "divider",
+      }}
+    >
+      {/* Header with Logo */}
       <Box
         sx={{
-          position: "relative",
           p: 2,
-          textAlign: "center",
-          height: 80, // Adjust as needed
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
+          gap: 2,
+          bgcolor: alpha(theme.palette.primary.main, 0.03),
         }}
       >
-        {/* Background Image */}
-        <Box
-          component="img"
-          src="src\assets\Clinic+.png" // Replace with the actual image path
-          alt="Background"
-          sx={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            zIndex: 1, // Behind the text
-            opacity: 0.2, // Make the image less prominent
-          }}
-        />
-        {/* Text on Top */}
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <Box
+            component="img"
+            src={clinicLogo}
+            alt="Clinic+"
+            sx={{
+              height: 40,
+              width: "auto",
+            }}
+          />
+        </motion.div>
         <Typography
           variant="h6"
           sx={{
-            position: "relative",
-            zIndex: 2, // Above the background
-            fontWeight: "bold",
+            fontWeight: 600,
+            background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
           }}
         >
           Clinic +
         </Typography>
       </Box>
+
       <Divider />
-      <Box sx={{ flexGrow: 1 }}>
-        <MenuItems items={appMenuItems} />
+
+      {/* Main Navigation */}
+      <Box sx={{ flexGrow: 1, overflowY: "auto", py: 2 }}>
+        <MenuItems items={appMenuItems} currentPath={location.pathname} />
       </Box>
+
       <Divider />
-      <Box>
-        <MenuItems items={profileMenuItems} />
+
+      {/* Profile Section */}
+      <Box sx={{ p: 2 }}>
+        <MenuItems items={profileMenuItems} currentPath={location.pathname} />
       </Box>
+
       <Divider />
+
+      {/* User Info & Logout */}
       {user && (
-        <Stack direction="row" sx={{ p: 2, alignItems: "center" }}>
-          <Avatar alt={user.name} src="/static/images/avatar/7.jpg" />
-          <Box sx={{ ml: 2 }}>
-            <Typography variant="body1" fontWeight="bold">
-              {user.name}
-            </Typography>
-            <Typography
-              variant="body2"
+        <Box sx={{ p: 2 }}>
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{
+              p: 1.5,
+              borderRadius: 2,
+              bgcolor: alpha(theme.palette.primary.main, 0.04),
+              mb: 2,
+            }}
+          >
+            <Avatar
+              src={user.avatarUrl}
+              alt={user.name}
               sx={{
-                maxWidth: 150,
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
+                width: 40,
+                height: 40,
+                border: `2px solid ${theme.palette.primary.main}`,
               }}
-            >
-              {user.email}
-            </Typography>
-          </Box>
-        </Stack>
+            />
+            <Box sx={{ minWidth: 0 }}>
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  fontWeight: 600,
+                  color: "text.primary",
+                }}
+              >
+                {user.name}
+              </Typography>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: "text.secondary",
+                  display: "block",
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {user.email}
+              </Typography>
+            </Box>
+          </Stack>
+
+          <Button
+            variant="outlined"
+            fullWidth
+            color="error"
+            startIcon={<LogoutRoundedIcon />}
+            onClick={logout}
+            sx={{
+              borderRadius: 2,
+              textTransform: "none",
+              transition: "all 0.2s",
+              "&:hover": {
+                bgcolor: alpha(theme.palette.error.main, 0.08),
+              },
+            }}
+          >
+            Logout
+          </Button>
+        </Box>
       )}
-      <Divider />
-      <Stack sx={{ p: 2 }}>
-        <Button variant="outlined" fullWidth startIcon={<LogoutRoundedIcon />}>
-          Logout
-        </Button>
-      </Stack>
     </Stack>
   );
 
@@ -114,7 +166,8 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, toggleDrawer }) => {
         onClose={toggleDrawer}
         sx={{
           "& .MuiDrawer-paper": {
-            width: "70vw",
+            width: drawerWidth,
+            boxShadow: theme.shadows[8],
           },
         }}
       >
@@ -130,9 +183,10 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, toggleDrawer }) => {
         display: { xs: "none", md: "block" },
         "& .MuiDrawer-paper": {
           width: drawerWidth,
-          position: "fixed", // Make sure the sidebar is fixed
+          boxSizing: "border-box",
+          borderRight: `1px solid ${theme.palette.divider}`,
+          bgcolor: "background.paper",
           height: "100%",
-          zIndex: 1000, // Ensure it is on top of the page content
         },
       }}
     >

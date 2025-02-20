@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import dayjs, { Dayjs } from "dayjs";
 import {
   Container,
@@ -11,6 +11,9 @@ import {
   Button,
   MenuItem,
   CircularProgress,
+  Paper,
+  Chip,
+  Stack,
 } from "@mui/material";
 import {
   LocalizationProvider,
@@ -18,9 +21,14 @@ import {
   TimePicker,
 } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import EventIcon from "@mui/icons-material/Event";
+import PersonIcon from "@mui/icons-material/Person";
+import SaveIcon from "@mui/icons-material/Save";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useAppointmentDetails } from "../features/appointments/hooks/useAppointmentDetails";
 import { Appointment } from "../features/appointments/types";
 import { useToast } from "../contexts/ToastContext";
+import { useAppNavigation } from "../hooks/useAppNavigation";
 
 type FormValues = {
   date: Dayjs | null;
@@ -31,9 +39,21 @@ type FormValues = {
   cost: number;
 };
 
+const statusColors = {
+  N: "primary" as const,
+  D: "success" as const,
+  C: "error" as const,
+};
+
+const statusLabels = {
+  N: "New",
+  D: "Done",
+  C: "Cancelled",
+};
+
 const AppointmentPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+  const { toAppointments } = useAppNavigation();
   const { appointment, loading, saveAppointment } = useAppointmentDetails(id);
   const { showToast } = useToast();
 
@@ -97,7 +117,7 @@ const AppointmentPage: React.FC = () => {
     };
 
     await saveAppointment(payload);
-    navigate("/appointments");
+    toAppointments();
   };
 
   if (loading) {
@@ -107,7 +127,8 @@ const AppointmentPage: React.FC = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          height: "100vh",
+          height: "calc(100vh - 64px)", // Adjust based on your header height
+          backgroundColor: "#f5f5f5",
         }}
       >
         <CircularProgress />
@@ -116,176 +137,243 @@ const AppointmentPage: React.FC = () => {
   }
 
   return (
-    <Box sx={{ padding: 3, backgroundColor: "#f9f9f9" }}>
-      <Container sx={{ py: 4 }}>
-        {appointment?.patient && (
-          <Grid container spacing={2} sx={{ mb: 4 }}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Patient Name"
-                value={appointment.patient.name}
-                InputProps={{ readOnly: true }}
-                fullWidth
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Phone"
-                value={appointment.patient.phone}
-                InputProps={{ readOnly: true }}
-                fullWidth
-              />
-            </Grid>
-          </Grid>
-        )}
-      </Container>
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <Container sx={{ py: 4 }}>
-          <Typography variant="h4" gutterBottom>
-            {id ? "Edit Appointment" : "Create Appointment"}
-          </Typography>
+    <Box
+      sx={{
+        padding: 3,
+        backgroundColor: "#f5f5f5",
+        minHeight: "calc(100vh - 64px)",
+      }}
+    >
+      <Container>
+        {/* Header Section */}
+        <Box sx={{ mb: 4 }}>
+          <Button
+            startIcon={<ArrowBackIcon />}
+            onClick={() => toAppointments()}
+            sx={{ mb: 2 }}
+          >
+            Back to Appointments
+          </Button>
+          <Stack direction="row" alignItems="center" spacing={2}>
+            <EventIcon color="primary" sx={{ fontSize: 32 }} />
+            <Typography variant="h4" component="h1">
+              {id ? "Edit Appointment" : "New Appointment"}
+            </Typography>
+          </Stack>
+        </Box>
+
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          {/* Patient Information Card */}
           {appointment?.patient && (
-            <Grid container spacing={2} sx={{ mb: 4 }}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Patient Name"
-                  value={appointment.patient.name}
-                  InputProps={{ readOnly: true }}
-                  fullWidth
-                />
+            <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
+              <Stack
+                direction="row"
+                alignItems="center"
+                spacing={2}
+                sx={{ mb: 2 }}
+              >
+                <PersonIcon color="primary" />
+                <Typography variant="h6">Patient Information</Typography>
+              </Stack>
+              <Grid container spacing={3}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Patient Name"
+                    value={appointment.patient.name}
+                    InputProps={{ readOnly: true }}
+                    fullWidth
+                    variant="filled"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Phone"
+                    value={appointment.patient.phone}
+                    InputProps={{ readOnly: true }}
+                    fullWidth
+                    variant="filled"
+                  />
+                </Grid>
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Phone"
-                  value={appointment.patient.phone}
-                  InputProps={{ readOnly: true }}
-                  fullWidth
-                />
-              </Grid>
-            </Grid>
+            </Paper>
           )}
 
-          <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <Controller
-                  name="date"
-                  control={control}
-                  rules={{ required: "Appointment date is required" }}
-                  render={({ field }) => (
-                    <DatePicker
-                      label="Appointment Date"
-                      value={field.value}
-                      onChange={(newValue) => field.onChange(newValue)}
-                      slotProps={{
-                        textField: {
-                          fullWidth: true,
-                          error: !!errors.date,
-                          helperText: errors.date?.message,
-                        },
-                      }}
-                    />
-                  )}
-                />
+          {/* Appointment Form */}
+          <Paper elevation={2} sx={{ p: 3 }}>
+            <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
+              <Grid container spacing={3}>
+                {/* Date and Time Section */}
+                <Grid item xs={12}>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{ mb: 2, fontWeight: 500 }}
+                  >
+                    Schedule Details
+                  </Typography>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6}>
+                      <Controller
+                        name="date"
+                        control={control}
+                        rules={{ required: "Appointment date is required" }}
+                        render={({ field }) => (
+                          <DatePicker
+                            label="Date"
+                            value={field.value}
+                            onChange={(newValue) => field.onChange(newValue)}
+                            slotProps={{
+                              textField: {
+                                fullWidth: true,
+                                error: !!errors.date,
+                                helperText: errors.date?.message,
+                              },
+                            }}
+                          />
+                        )}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <Controller
+                        name="time"
+                        control={control}
+                        rules={{ required: "Appointment time is required" }}
+                        render={({ field }) => (
+                          <TimePicker
+                            label="Time"
+                            value={field.value}
+                            onChange={(newValue) => field.onChange(newValue)}
+                            slotProps={{
+                              textField: {
+                                fullWidth: true,
+                                error: !!errors.time,
+                                helperText: errors.time?.message,
+                              },
+                            }}
+                          />
+                        )}
+                      />
+                    </Grid>
+                  </Grid>
+                </Grid>
+
+                {/* Appointment Details Section */}
+                <Grid item xs={12}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+                    Appointment Details
+                  </Typography>
+                </Grid>
+
+                <Grid item xs={12}>
+                  <Controller
+                    name="motive"
+                    control={control}
+                    rules={{ required: "Motive is required" }}
+                    render={({ field }) => (
+                      <TextField
+                        label="Motive"
+                        fullWidth
+                        value={field.value}
+                        onChange={field.onChange}
+                        error={!!errors.motive}
+                        helperText={errors.motive?.message}
+                      />
+                    )}
+                  />
+                </Grid>
+
+                <Grid item xs={12}>
+                  <Controller
+                    name="obs"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        label="Observations"
+                        fullWidth
+                        multiline
+                        minRows={3}
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <Controller
+                    name="status"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        label="Status"
+                        select
+                        fullWidth
+                        value={field.value}
+                        onChange={field.onChange}
+                      >
+                        {Object.entries(statusLabels).map(([key, label]) => (
+                          <MenuItem key={key} value={key}>
+                            <Chip
+                              label={label}
+                              size="small"
+                              color={
+                                statusColors[key as keyof typeof statusColors]
+                              }
+                              sx={{ mr: 1 }}
+                            />
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    )}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <Controller
+                    name="cost"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        label="Cost (€)"
+                        type="number"
+                        fullWidth
+                        value={field.value}
+                        onChange={field.onChange}
+                        InputProps={{
+                          inputProps: { min: 0, step: 0.01 },
+                          startAdornment: (
+                            <Typography sx={{ mr: 1 }}>€</Typography>
+                          ),
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <Controller
-                  name="time"
-                  control={control}
-                  rules={{ required: "Appointment time is required" }}
-                  render={({ field }) => (
-                    <TimePicker
-                      label="Appointment Time"
-                      value={field.value}
-                      onChange={(newValue) => field.onChange(newValue)}
-                      slotProps={{
-                        textField: {
-                          fullWidth: true,
-                          error: !!errors.time,
-                          helperText: errors.time?.message,
-                        },
-                      }}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Controller
-                  name="motive"
-                  control={control}
-                  rules={{ required: "Motive is required" }}
-                  render={({ field }) => (
-                    <TextField
-                      label="Motive"
-                      fullWidth
-                      value={field.value}
-                      onChange={field.onChange}
-                      error={!!errors.motive}
-                      helperText={errors.motive?.message}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Controller
-                  name="obs"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      label="Observations"
-                      fullWidth
-                      multiline
-                      minRows={3}
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Controller
-                  name="status"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      label="Status"
-                      select
-                      fullWidth
-                      value={field.value}
-                      onChange={field.onChange}
-                    >
-                      <MenuItem value="N">New</MenuItem>
-                      <MenuItem value="D">Done</MenuItem>
-                      <MenuItem value="C">Cancelled</MenuItem>
-                    </TextField>
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Controller
-                  name="cost"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      label="Cost (€)"
-                      type="number"
-                      fullWidth
-                      value={field.value}
-                      onChange={field.onChange}
-                      InputProps={{ inputProps: { min: 0, step: 0.01 } }}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12} sx={{ textAlign: "right", mt: 2 }}>
-                <Button variant="contained" type="submit">
+
+              {/* Action Buttons */}
+              <Box
+                sx={{
+                  mt: 4,
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: 2,
+                }}
+              >
+                <Button variant="outlined" onClick={() => toAppointments()}>
+                  Cancel
+                </Button>
+                <Button
+                  variant="contained"
+                  type="submit"
+                  startIcon={<SaveIcon />}
+                >
                   Save Appointment
                 </Button>
-              </Grid>
-            </Grid>
-          </Box>
-        </Container>
-      </LocalizationProvider>
+              </Box>
+            </Box>
+          </Paper>
+        </LocalizationProvider>
+      </Container>
     </Box>
   );
 };

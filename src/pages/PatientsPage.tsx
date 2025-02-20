@@ -19,12 +19,14 @@ import {
   Edit as EditIcon,
 } from "@mui/icons-material";
 import InputAdornment from "@mui/material/InputAdornment";
-import { useNavigate } from "react-router-dom";
 import GenericGrid from "../components/common/GenericGrid";
 import PatientForm from "../features/patients/components/PatientForm";
 import { formatDate } from "../utils/dateHelper";
 import { usePatients } from "../features/patients/hooks/usePatients";
 import { Patient } from "../features/patients/types";
+import { useAppNavigation } from "../hooks/useAppNavigation";
+
+const { toPatientDetails } = useAppNavigation();
 
 const PatientsPage: React.FC = () => {
   // local state for filtering, pagination, and dialog control
@@ -32,7 +34,6 @@ const PatientsPage: React.FC = () => {
   const [page, setPage] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(20);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
-  const navigate = useNavigate();
 
   // use our custom hook to fetch patients based on filters and pagination
   const { patients, totalPatients, loading, error, addNewPatient } =
@@ -58,7 +59,7 @@ const PatientsPage: React.FC = () => {
   };
 
   const handleEditPatient = (id: string) => {
-    navigate(`/patients/${id}`);
+    toPatientDetails(id);
   };
 
   const handleAddPatient = async (values: Omit<Patient, "id">) => {
@@ -120,15 +121,96 @@ const PatientsPage: React.FC = () => {
     phone: patient.phone,
   }));
 
+  const stats = [
+    { label: "Total Patients", value: totalPatients },
+    { label: "New This Month", value: "28" },
+    { label: "Active Patients", value: "156" },
+  ];
+
   return (
-    <Box sx={{ padding: 3, backgroundColor: "#f9f9f9" }}>
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
-        <Typography variant="h4">Patient Management</Typography>
+    <Box sx={{ padding: 3, backgroundColor: "#f5f7fb" }}>
+      {/* Improved header section */}
+      <Box sx={{ mb: 4 }}>
+        <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+          <Typography
+            sx={{
+              fontSize: "12px",
+              color: "text.secondary",
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+            }}
+          >
+            Dashboard / <Typography color="primary">Patients</Typography>
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3,
+          }}
+        >
+          <Typography variant="h4" sx={{ fontWeight: 600 }}>
+            Patient Management
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<AddIcon />}
+            onClick={() => setOpenDialog(true)}
+            sx={{
+              borderRadius: 2,
+              textTransform: "none",
+              px: 3,
+            }}
+          >
+            Add Patient
+          </Button>
+        </Box>
+
+        {/* Stats Cards */}
+        <Grid container spacing={3} sx={{ mb: 4 }}>
+          {stats.map((stat) => (
+            <Grid item xs={12} md={4} key={stat.label}>
+              <Card
+                sx={{
+                  p: 3,
+                  display: "flex",
+                  flexDirection: "column",
+                  bgcolor: "background.paper",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+                  borderRadius: 2,
+                }}
+              >
+                <Typography
+                  color="text.secondary"
+                  variant="body2"
+                  sx={{ mb: 1 }}
+                >
+                  {stat.label}
+                </Typography>
+                <Typography variant="h4" sx={{ fontWeight: 600 }}>
+                  {stat.value}
+                </Typography>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
       </Box>
 
-      <Card sx={{ mb: 4, p: 2 }}>
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={5.5}>
+      {/* Improved search filters */}
+      <Card
+        sx={{
+          mb: 4,
+          p: 3,
+          borderRadius: 2,
+          boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+        }}
+      >
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={5}>
             <TextField
               label="Search by Name"
               variant="outlined"
@@ -139,13 +221,19 @@ const PatientsPage: React.FC = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon />
+                    <SearchIcon sx={{ color: "text.secondary" }} />
                   </InputAdornment>
                 ),
               }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 2,
+                  bgcolor: "background.paper",
+                },
+              }}
             />
           </Grid>
-          <Grid item xs={12} md={5.5}>
+          <Grid item xs={12} md={5}>
             <TextField
               label="Search by Phone"
               variant="outlined"
@@ -156,32 +244,65 @@ const PatientsPage: React.FC = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon />
+                    <SearchIcon sx={{ color: "text.secondary" }} />
                   </InputAdornment>
                 ),
               }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 2,
+                  bgcolor: "background.paper",
+                },
+              }}
             />
-          </Grid>
-          <Grid item xs={12} md={1}>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<AddIcon />}
-              onClick={() => setOpenDialog(true)}
-            >
-              Add Patient
-            </Button>
           </Grid>
         </Grid>
       </Card>
 
-      <Card sx={{ p: 2, overflowX: "auto", whiteSpace: "nowrap" }}>
+      {/* Improved table card */}
+      <Card
+        sx={{
+          p: 3,
+          borderRadius: 2,
+          boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+          "& .MuiDataGrid-root": {
+            border: "none",
+            "& .MuiDataGrid-cell": {
+              borderBottom: "1px solid #f0f0f0",
+            },
+            "& .MuiDataGrid-columnHeaders": {
+              bgcolor: "#f8fafc",
+              borderBottom: "1px solid #e0e0e0",
+            },
+          },
+        }}
+      >
         {loading ? (
-          <CircularProgress sx={{ display: "block", mx: "auto" }} />
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              py: 8,
+            }}
+          >
+            <CircularProgress size={40} />
+            <Typography sx={{ ml: 2 }} color="text.secondary">
+              Loading patients...
+            </Typography>
+          </Box>
         ) : error ? (
-          <Typography variant="body1" color="error" textAlign="center">
-            {error}
-          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              py: 8,
+              color: "error.main",
+            }}
+          >
+            <Typography variant="body1">{error}</Typography>
+          </Box>
         ) : (
           <GenericGrid
             rows={rows}
@@ -191,14 +312,36 @@ const PatientsPage: React.FC = () => {
               onPaginationModelChange: handlePaginationChange,
               rowCount: totalPatients,
               paginationMode: "server",
+              disableColumnMenu: true,
+              autoHeight: true,
             }}
           />
         )}
       </Card>
 
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-        <DialogTitle>Add Patient</DialogTitle>
-        <DialogContent>
+      {/* Improved dialog */}
+      <Dialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            pb: 2,
+            borderBottom: "1px solid #f0f0f0",
+            fontSize: "1.2rem",
+            fontWeight: 600,
+          }}
+        >
+          Add New Patient
+        </DialogTitle>
+        <DialogContent sx={{ pt: 3 }}>
           <PatientForm
             onSubmit={handleAddPatient}
             onCancel={() => setOpenDialog(false)}
@@ -208,5 +351,4 @@ const PatientsPage: React.FC = () => {
     </Box>
   );
 };
-
 export default PatientsPage;

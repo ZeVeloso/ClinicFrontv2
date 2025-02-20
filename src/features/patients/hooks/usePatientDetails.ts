@@ -22,6 +22,10 @@ export const usePatientDetails = (patientId: string) => {
   // Used to update patient fields before saving changes
   const [editedFields, setEditedFields] = useState<Partial<Patient>>({});
 
+  const [actionLoading, setActionLoading] = useState<{
+    [key: string]: boolean;
+  }>({});
+
   const { showToast } = useToast();
 
   // Fetch patient details
@@ -119,6 +123,29 @@ export const usePatientDetails = (patientId: string) => {
     }
   };
 
+  const handleStatusAction = async (
+    id: string,
+    action: "cancel" | "complete",
+    onSuccess?: () => void
+  ) => {
+    setActionLoading((prev) => ({ ...prev, [id]: true }));
+    try {
+      if (action === "cancel") {
+        await cancelAppointment(id);
+        showToast("Appointment cancelled successfully", "success");
+      } else {
+        await toggleAppointmentStatus(id);
+        showToast("Appointment status updated successfully", "success");
+      }
+      await fetchAppointments(); // Refresh the list after action
+      onSuccess?.();
+    } catch (error) {
+      showToast("Error updating appointment", "error");
+    } finally {
+      setActionLoading((prev) => ({ ...prev, [id]: false }));
+    }
+  };
+
   return {
     patient,
     appointments,
@@ -126,9 +153,11 @@ export const usePatientDetails = (patientId: string) => {
     loadingAppointments,
     patientError,
     appointmentsError,
+    actionLoading,
     handleFieldChange,
     savePatientChanges,
     addOrEditAppointment,
+    handleStatusAction,
     toggleAppointmentStatus: handleToggleAppointmentStatus,
     cancelAppointment: handleCancelAppointment,
     refreshPatient: fetchPatient,
