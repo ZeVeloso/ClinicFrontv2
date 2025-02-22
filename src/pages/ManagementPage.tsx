@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import {
   Box,
-  Container,
   Grid,
   Card,
   CardContent,
@@ -24,8 +23,7 @@ import {
 } from "recharts";
 import { fetchManagementStats, fetchRevenueData } from "../api/management";
 import { ManagementStats, Revenue } from "../features/management/types";
-import { CircularProgress, Alert, Skeleton } from "@mui/material";
-import React from "react";
+import { Alert, Skeleton } from "@mui/material";
 
 const ManagementPage = () => {
   const [timeRange, setTimeRange] = useState<"year">("year");
