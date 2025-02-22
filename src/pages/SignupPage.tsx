@@ -126,7 +126,7 @@ const SignupPage: React.FC = () => {
             color="text.secondary"
             sx={{ mb: 3, textAlign: "center" }}
           >
-            Join our healthcare platform to manage your medical records and
+            Join our healthcare platform to manage your patients and
             appointments
           </Typography>
 
