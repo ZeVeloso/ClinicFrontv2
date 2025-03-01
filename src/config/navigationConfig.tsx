@@ -14,6 +14,8 @@ export const APP_PATHS = {
   MANAGEMENT: "/app/management",
   SETTINGS: "/app/settings",
   PROFILE: "/app/profile",
+  SUBSCRIPTION: "/app/settings/subscription",
+  CHECKOUT_SUCCESS: "/app/checkout/success",
 } as const;
 
 export const generatePath = (path: string, params?: Record<string, string>) => {

@@ -24,6 +24,8 @@ const PatientPage = lazy(() => import("./pages/PatientPage"));
 const AppointmentsPage = lazy(() => import("./pages/AppointmentsPage"));
 const ManagementPage = lazy(() => import("./pages/ManagementPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
+const CheckoutSuccessPage = lazy(() => import("./pages/CheckoutSuccessPage"));
+const SubscriptionPage = lazy(() => import("./pages/SubscriptionPage"));
 
 const ProtectedApp: React.FC = () => (
   <ProtectedRoute>
@@ -78,6 +80,14 @@ const router = createBrowserRouter([
       {
         path: "settings",
         element: <SettingsPage />,
+      },
+      {
+        path: "settings/subscription",
+        element: <SubscriptionPage />,
+      },
+      {
+        path: "checkout/success",
+        element: <CheckoutSuccessPage />,
       },
     ],
   },
