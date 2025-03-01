@@ -17,7 +17,6 @@ import {
   DialogActions,
   Grid as MuiGrid,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
 import { useParams } from "react-router-dom";
 import PersonIcon from "@mui/icons-material/Person";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -28,8 +27,6 @@ import ScheduleIcon from "@mui/icons-material/Schedule";
 import CancelIcon from "@mui/icons-material/Cancel";
 import MedicalInformationIcon from "@mui/icons-material/MedicalInformation";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
-import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
-import FamilyRestroomIcon from "@mui/icons-material/FamilyRestroom";
 import { usePatientDetails } from "../features/patients/hooks/usePatientDetails";
 import GenericGrid from "../components/common/GenericGrid";
 import AppointmentForm from "../features/appointments/components/AppointmentForm";

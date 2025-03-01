@@ -78,7 +78,6 @@ const AppointmentsPage: React.FC = () => {
     totalAppointments,
     loading,
     error,
-    addAppointment,
     addAppointment2,
     refreshAppointments,
     handleStatusAction,
