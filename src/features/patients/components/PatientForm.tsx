@@ -121,6 +121,7 @@ const PatientForm: React.FC<PatientFormProps> = ({
               },
             }}
           >
+            <MenuItem value="male"></MenuItem>
             <MenuItem value="male">Male</MenuItem>
             <MenuItem value="female">Female</MenuItem>
             <MenuItem value="other">Other</MenuItem>

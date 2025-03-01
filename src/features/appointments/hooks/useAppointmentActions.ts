@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import {
   createAppointment,
+  createAppointment2,
   updateAppointment,
 } from "../../../api/appointments";
 import { Appointment } from "../types";
@@ -19,6 +20,19 @@ export const useAppointmentActions = (
           appointmentData.patientId,
           appointmentData
         );
+        // Update the local state by appending the new appointment
+        setAppointments((prev) => [...prev, newAppointment]);
+      } catch (err) {
+        throw new Error("Error creating appointment. Please try again.");
+      }
+    },
+    [setAppointments]
+  );
+
+  const addAppointment2 = useCallback(
+    async (appointmentData: any) => {
+      try {
+        const newAppointment = await createAppointment2(appointmentData);
         // Update the local state by appending the new appointment
         setAppointments((prev) => [...prev, newAppointment]);
       } catch (err) {
@@ -84,6 +98,7 @@ export const useAppointmentActions = (
 
   return {
     addAppointment,
+    addAppointment2,
     editAppointment,
     toggleAppointmentStatus,
     cancelAppointment,

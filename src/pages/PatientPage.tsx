@@ -13,10 +13,9 @@ import {
   Stack,
   IconButton,
   Tooltip,
-  Tab,
-  Tabs,
   MenuItem,
   DialogActions,
+  Grid as MuiGrid,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { useParams } from "react-router-dom";
@@ -40,7 +39,6 @@ import { useAppNavigation } from "../hooks/useAppNavigation";
 const PatientDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { toPatients } = useAppNavigation();
-  const [activeTab, setActiveTab] = useState(0);
   const {
     patient,
     appointments,
@@ -57,14 +55,13 @@ const PatientDetailsPage: React.FC = () => {
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [currentAppointment, setCurrentAppointment] = useState<any>(null);
-
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
     appointmentId: string | null;
     action: "cancel" | "complete" | null;
   }>({ open: false, appointmentId: null, action: null });
 
-  if (loadingPatient)
+  if (loadingPatient) {
     return (
       <Box
         sx={{
@@ -77,6 +74,7 @@ const PatientDetailsPage: React.FC = () => {
         <CircularProgress />
       </Box>
     );
+  }
 
   if (patientError || !patient) {
     return (
@@ -109,405 +107,297 @@ const PatientDetailsPage: React.FC = () => {
   } as const;
 
   return (
-    <Box
-      sx={{
-        padding: { xs: 1, sm: 2, md: 3 }, // Responsive padding
-        backgroundColor: "#f5f5f5",
-        minHeight: "100vh",
-      }}
-    >
+    <Box sx={{ p: 3, backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
       {/* Header */}
-      <Box sx={{ mb: { xs: 2, sm: 3, md: 4 } }}>
-        {" "}
-        {/* Responsive margin */}
-        <Button
-          startIcon={<ArrowBackIcon />}
-          onClick={() => toPatients()}
-          sx={{ mb: { xs: 1, sm: 2 } }} // Responsive margin
-        >
-          Back to Patients
-        </Button>
-        <Stack
-          direction="row"
-          alignItems="center"
-          spacing={{ xs: 1, sm: 2 }} // Responsive spacing
-          sx={{ flexWrap: "wrap" }} // Allow wrapping on small screens
-        >
-          <PersonIcon
-            color="primary"
-            sx={{ fontSize: { xs: 30, sm: 35, md: 40 } }}
-          />
-          <Typography
-            variant="h4"
-            component="h1"
-            sx={{
-              fontSize: { xs: "1.5rem", sm: "2rem", md: "2.5rem" }, // Responsive font
-            }}
-          >
-            {patient.name}
-          </Typography>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        sx={{ mb: 3 }}
+      >
+        <Stack direction="row" alignItems="center" spacing={2}>
+          <IconButton onClick={() => toPatients()} color="primary">
+            <ArrowBackIcon />
+          </IconButton>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <PersonIcon color="primary" sx={{ fontSize: 32 }} />
+            <Typography variant="h4">{patient.name}</Typography>
+          </Stack>
         </Stack>
-      </Box>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => {
+            setCurrentAppointment(null);
+            setIsFormOpen(true);
+          }}
+        >
+          New Appointment
+        </Button>
+      </Stack>
 
       {/* Main Content */}
-      <Paper
-        elevation={1}
-        sx={{
-          mb: { xs: 2, sm: 3, md: 4 },
-          overflow: "hidden", // Prevent content overflow
-          width: "100%",
-        }}
-      >
-        <Tabs
-          value={activeTab}
-          onChange={(_, newValue) => setActiveTab(newValue)}
-          sx={{
-            borderBottom: 1,
-            borderColor: "divider",
-            "& .MuiTabs-flexContainer": {
-              flexWrap: { xs: "wrap", sm: "nowrap" }, // Stack tabs on mobile
-            },
-          }}
-        >
-          <Tab
-            icon={<ContactMailIcon />}
-            label="Personal Info"
-            sx={{
-              minWidth: { xs: "100%", sm: "auto" }, // Full width on mobile
-              fontSize: { xs: "0.8rem", sm: "0.875rem" },
-            }}
-          />
-          <Tab
-            icon={<MedicalInformationIcon />}
-            label="Medical History"
-            sx={{
-              minWidth: { xs: "100%", sm: "auto" },
-              fontSize: { xs: "0.8rem", sm: "0.875rem" },
-            }}
-          />
-          <Tab
-            icon={<ScheduleIcon />}
-            label="Appointments"
-            sx={{
-              minWidth: { xs: "100%", sm: "auto" },
-              fontSize: { xs: "0.8rem", sm: "0.875rem" },
-            }}
-          />
-        </Tabs>
-
-        {/* Tab Content */}
-        <Box
-          sx={{
-            p: { xs: 1, sm: 2, md: 3 }, // Responsive padding
-            overflowX: "auto", // Allow horizontal scroll if needed
-          }}
-        >
-          {/* Personal Information Tab */}
-          {activeTab === 0 && (
-            <Box sx={{ p: 3 }}>
-              <Grid container spacing={3}>
-                <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                  <TextField
-                    fullWidth
-                    label="Name"
-                    value={patient.name}
-                    onChange={(e) => handleFieldChange("name", e.target.value)}
-                    onBlur={savePatientChanges}
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                  <TextField
-                    fullWidth
-                    label="Phone"
-                    value={patient.phone}
-                    onChange={(e) => handleFieldChange("phone", e.target.value)}
-                    onBlur={savePatientChanges}
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                  <TextField
-                    fullWidth
-                    label="Birth Date"
-                    type="date"
-                    value={patient.birth}
-                    onChange={(e) => handleFieldChange("birth", e.target.value)}
-                    onBlur={savePatientChanges}
-                    InputLabelProps={{ shrink: true }}
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, md: 8 }}>
-                  <TextField
-                    fullWidth
-                    label="Address"
-                    value={patient.address}
-                    onChange={(e) =>
-                      handleFieldChange("address", e.target.value)
-                    }
-                    onBlur={savePatientChanges}
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                  <TextField
-                    fullWidth
-                    label="Gender"
-                    select
-                    value={patient.gender}
-                    onChange={(e) =>
-                      handleFieldChange("gender", e.target.value)
-                    }
-                    onBlur={savePatientChanges}
-                  >
-                    <MenuItem value="M">Male</MenuItem>
-                    <MenuItem value="F">Female</MenuItem>
-                    <MenuItem value="O">Other</MenuItem>
-                  </TextField>
-                </Grid>
-              </Grid>
-            </Box>
-          )}
-
-          {/* Medical History Tab */}
-          {activeTab === 1 && (
-            <Box sx={{ p: 3 }}>
-              <Grid container spacing={3}>
-                <Grid size={{ xs: 12, sm: 6, md: 12 }}>
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    spacing={1}
-                    sx={{ mb: 2 }}
-                  >
-                    <MedicalInformationIcon color="primary" />
-                    <Typography variant="h6">
-                      Personal Medical History
-                    </Typography>
-                  </Stack>
-                  <TextField
-                    fullWidth
-                    multiline
-                    rows={4}
-                    value={patient.personalHistory || ""}
-                    onChange={(e) =>
-                      handleFieldChange("personalHistory", e.target.value)
-                    }
-                    onBlur={savePatientChanges}
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, md: 12 }}>
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    spacing={1}
-                    sx={{ mb: 2 }}
-                  >
-                    <FitnessCenterIcon color="primary" />
-                    <Typography variant="h6">Physical Activity</Typography>
-                  </Stack>
-                  <TextField
-                    fullWidth
-                    multiline
-                    rows={4}
-                    value={patient.physicalActivity || ""}
-                    onChange={(e) =>
-                      handleFieldChange("physicalActivity", e.target.value)
-                    }
-                    onBlur={savePatientChanges}
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, md: 12 }}>
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    spacing={1}
-                    sx={{ mb: 2 }}
-                  >
-                    <FamilyRestroomIcon color="primary" />
-                    <Typography variant="h6">Family History</Typography>
-                  </Stack>
-                  <TextField
-                    fullWidth
-                    multiline
-                    rows={4}
-                    value={patient.familyHistory || ""}
-                    onChange={(e) =>
-                      handleFieldChange("familyHistory", e.target.value)
-                    }
-                    onBlur={savePatientChanges}
-                  />
-                </Grid>
-              </Grid>
-            </Box>
-          )}
-
-          {/* Appointments Tab */}
-          {activeTab === 2 && (
-            <Box sx={{ p: 3 }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  mb: 3,
-                }}
-              >
-                <Typography variant="h6">Appointment History</Typography>
-                <Button
-                  variant="contained"
-                  startIcon={<AddIcon />}
-                  onClick={() => {
-                    setCurrentAppointment(null);
-                    setIsFormOpen(true);
-                  }}
+      <MuiGrid container spacing={3}>
+        {/* Left Column - Patient Information */}
+        <MuiGrid item xs={12} md={4}>
+          <Stack spacing={3}>
+            {/* Personal Information Card */}
+            <Paper elevation={1} sx={{ p: 3 }}>
+              <Stack spacing={2}>
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <ContactMailIcon color="primary" />
+                  <Typography variant="h6">Personal Information</Typography>
+                </Stack>
+                <TextField
+                  fullWidth
+                  label="Name"
+                  value={patient.name}
+                  onChange={(e) => handleFieldChange("name", e.target.value)}
+                  onBlur={savePatientChanges}
+                  size="small"
+                />
+                <TextField
+                  fullWidth
+                  label="Phone"
+                  value={patient.phone}
+                  onChange={(e) => handleFieldChange("phone", e.target.value)}
+                  onBlur={savePatientChanges}
+                  size="small"
+                />
+                <TextField
+                  fullWidth
+                  label="Birth Date"
+                  type="date"
+                  value={patient.birth}
+                  onChange={(e) => handleFieldChange("birth", e.target.value)}
+                  onBlur={savePatientChanges}
+                  InputLabelProps={{ shrink: true }}
+                  size="small"
+                />
+                <TextField
+                  fullWidth
+                  label="Gender"
+                  select
+                  value={patient.gender}
+                  onChange={(e) => handleFieldChange("gender", e.target.value)}
+                  onBlur={savePatientChanges}
+                  size="small"
                 >
-                  New Appointment
-                </Button>
-              </Box>
+                  <MenuItem value="M">Male</MenuItem>
+                  <MenuItem value="F">Female</MenuItem>
+                  <MenuItem value="O">Other</MenuItem>
+                </TextField>
+                <TextField
+                  fullWidth
+                  label="Address"
+                  value={patient.address}
+                  onChange={(e) => handleFieldChange("address", e.target.value)}
+                  onBlur={savePatientChanges}
+                  size="small"
+                  multiline
+                  rows={2}
+                />
+              </Stack>
+            </Paper>
+
+            {/* Medical History Summary */}
+            <Paper elevation={1} sx={{ p: 3 }}>
+              <Stack spacing={2}>
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <MedicalInformationIcon color="primary" />
+                  <Typography variant="h6">Medical Summary</Typography>
+                </Stack>
+                <TextField
+                  fullWidth
+                  label="Personal Medical History"
+                  multiline
+                  rows={3}
+                  value={patient.personalHistory || ""}
+                  onChange={(e) =>
+                    handleFieldChange("personalHistory", e.target.value)
+                  }
+                  onBlur={savePatientChanges}
+                  size="small"
+                />
+                <TextField
+                  fullWidth
+                  label="Physical Activity"
+                  multiline
+                  rows={2}
+                  value={patient.physicalActivity || ""}
+                  onChange={(e) =>
+                    handleFieldChange("physicalActivity", e.target.value)
+                  }
+                  onBlur={savePatientChanges}
+                  size="small"
+                />
+                <TextField
+                  fullWidth
+                  label="Family History"
+                  multiline
+                  rows={3}
+                  value={patient.familyHistory || ""}
+                  onChange={(e) =>
+                    handleFieldChange("familyHistory", e.target.value)
+                  }
+                  onBlur={savePatientChanges}
+                  size="small"
+                />
+              </Stack>
+            </Paper>
+          </Stack>
+        </MuiGrid>
+
+        {/* Right Column - Appointments */}
+        <MuiGrid item xs={12} md={8}>
+          <Paper elevation={1} sx={{ p: 3, height: "100%" }}>
+            <Stack spacing={3} sx={{ height: "100%" }}>
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <ScheduleIcon color="primary" />
+                <Typography variant="h6">Appointment History</Typography>
+              </Stack>
 
               {loadingAppointments ? (
-                <CircularProgress />
+                <Box sx={{ display: "flex", justifyContent: "center", p: 3 }}>
+                  <CircularProgress />
+                </Box>
               ) : appointmentsError ? (
                 <Typography variant="body1" color="error">
                   {appointmentsError}
                 </Typography>
               ) : appointments.length > 0 ? (
-                <GenericGrid
-                  rows={appointments.map((appt) => ({
-                    id: appt.id,
-                    date: formatDateTime(new Date(appt.date)),
-                    status: appt.status,
-                    motive: appt.motive,
-                    obs: appt.obs,
-                  }))}
-                  columns={[
-                    {
-                      field: "date",
-                      headerName: "Date",
-                      flex: 1,
-                      minWidth: 180,
-                    },
-                    {
-                      field: "status",
-                      headerName: "Status",
-                      flex: 0.5,
-                      minWidth: 120,
-                      renderCell: ({ row }) => (
-                        <Chip
-                          label={
-                            row.status === "D"
-                              ? "Done"
-                              : row.status === "N"
-                                ? "Scheduled"
-                                : "Cancelled"
-                          }
-                          color={
-                            statusChipColor[
-                              row.status as keyof typeof statusChipColor
-                            ]
-                          }
-                          size="small"
-                        />
-                      ),
-                    },
-                    {
-                      field: "motive",
-                      headerName: "Motive",
-                      flex: 1.5,
-                      minWidth: 200,
-                    },
-                    {
-                      field: "actions",
-                      headerName: "Actions",
-                      flex: 0.5,
-                      minWidth: 150,
-                      renderCell: ({ row }) => (
-                        <Stack direction="row" spacing={1}>
-                          <Tooltip title="Edit">
-                            <IconButton
-                              size="small"
-                              onClick={() => {
-                                setCurrentAppointment(row);
-                                setIsFormOpen(true);
-                              }}
-                            >
-                              <EditIcon />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="Mark as Done">
-                            <span>
+                <Box sx={{ flexGrow: 1 }}>
+                  <GenericGrid
+                    rows={appointments.map((appt) => ({
+                      id: appt.id,
+                      date: formatDateTime(new Date(appt.date)),
+                      status: appt.status,
+                      motive: appt.motive,
+                      obs: appt.obs,
+                    }))}
+                    columns={[
+                      {
+                        field: "date",
+                        headerName: "Date",
+                        flex: 1,
+                        minWidth: 180,
+                      },
+                      {
+                        field: "status",
+                        headerName: "Status",
+                        flex: 0.5,
+                        minWidth: 120,
+                        renderCell: ({ row }) => (
+                          <Chip
+                            label={
+                              row.status === "D"
+                                ? "Done"
+                                : row.status === "N"
+                                  ? "Scheduled"
+                                  : "Cancelled"
+                            }
+                            color={
+                              statusChipColor[
+                                row.status as keyof typeof statusChipColor
+                              ]
+                            }
+                            size="small"
+                          />
+                        ),
+                      },
+                      {
+                        field: "motive",
+                        headerName: "Reason",
+                        flex: 1.5,
+                        minWidth: 200,
+                      },
+                      {
+                        field: "actions",
+                        headerName: "Actions",
+                        flex: 0.5,
+                        minWidth: 150,
+                        renderCell: ({ row }) => (
+                          <Stack direction="row" spacing={1}>
+                            <Tooltip title="Edit">
                               <IconButton
                                 size="small"
-                                color="success"
-                                onClick={() =>
-                                  setConfirmDialog({
-                                    open: true,
-                                    appointmentId: row.id,
-                                    action: "complete",
-                                  })
-                                }
-                                disabled={
-                                  row.status === "C" ||
-                                  row.status === "D" ||
-                                  actionLoading[row.id]
-                                }
+                                onClick={() => {
+                                  setCurrentAppointment(row);
+                                  setIsFormOpen(true);
+                                }}
                               >
-                                {actionLoading[row.id] ? (
-                                  <CircularProgress size={20} />
-                                ) : (
-                                  <CheckIcon />
-                                )}
+                                <EditIcon />
                               </IconButton>
-                            </span>
-                          </Tooltip>
-                          <Tooltip title="Cancel">
-                            <span>
-                              <IconButton
-                                size="small"
-                                color="error"
-                                onClick={() =>
-                                  setConfirmDialog({
-                                    open: true,
-                                    appointmentId: row.id,
-                                    action: "cancel",
-                                  })
-                                }
-                                disabled={
-                                  row.status === "C" || actionLoading[row.id]
-                                }
-                              >
-                                {actionLoading[row.id] ? (
-                                  <CircularProgress size={20} />
-                                ) : (
-                                  <CancelIcon />
-                                )}
-                              </IconButton>
-                            </span>
-                          </Tooltip>
-                        </Stack>
-                      ),
-                    },
-                  ]}
-                />
+                            </Tooltip>
+                            <Tooltip title="Mark as Done">
+                              <span>
+                                <IconButton
+                                  size="small"
+                                  color="success"
+                                  onClick={() =>
+                                    setConfirmDialog({
+                                      open: true,
+                                      appointmentId: row.id,
+                                      action: "complete",
+                                    })
+                                  }
+                                  disabled={
+                                    row.status === "C" ||
+                                    row.status === "D" ||
+                                    actionLoading[row.id]
+                                  }
+                                >
+                                  {actionLoading[row.id] ? (
+                                    <CircularProgress size={20} />
+                                  ) : (
+                                    <CheckIcon />
+                                  )}
+                                </IconButton>
+                              </span>
+                            </Tooltip>
+                            <Tooltip title="Cancel">
+                              <span>
+                                <IconButton
+                                  size="small"
+                                  color="error"
+                                  onClick={() =>
+                                    setConfirmDialog({
+                                      open: true,
+                                      appointmentId: row.id,
+                                      action: "cancel",
+                                    })
+                                  }
+                                  disabled={
+                                    row.status === "C" || actionLoading[row.id]
+                                  }
+                                >
+                                  {actionLoading[row.id] ? (
+                                    <CircularProgress size={20} />
+                                  ) : (
+                                    <CancelIcon />
+                                  )}
+                                </IconButton>
+                              </span>
+                            </Tooltip>
+                          </Stack>
+                        ),
+                      },
+                    ]}
+                  />
+                </Box>
               ) : (
-                <Paper sx={{ p: 3, textAlign: "center" }}>
+                <Box sx={{ textAlign: "center", p: 3 }}>
                   <Typography color="textSecondary">
                     No appointments found for this patient.
                   </Typography>
-                  <Button
-                    variant="outlined"
-                    startIcon={<AddIcon />}
-                    onClick={() => {
-                      setCurrentAppointment(null);
-                      setIsFormOpen(true);
-                    }}
-                    sx={{ mt: 2 }}
-                  >
-                    Schedule First Appointment
-                  </Button>
-                </Paper>
+                </Box>
               )}
-            </Box>
-          )}
-        </Box>
-      </Paper>
+            </Stack>
+          </Paper>
+        </MuiGrid>
+      </MuiGrid>
+
+      {/* Dialogs */}
       <Dialog
         open={confirmDialog.open}
         onClose={() =>
@@ -561,7 +451,7 @@ const PatientDetailsPage: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
-      {/* Appointment Dialog */}
+
       <Dialog
         open={isFormOpen}
         onClose={() => setIsFormOpen(false)}

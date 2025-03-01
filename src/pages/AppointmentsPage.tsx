@@ -79,6 +79,7 @@ const AppointmentsPage: React.FC = () => {
     loading,
     error,
     addAppointment,
+    addAppointment2,
     refreshAppointments,
     handleStatusAction,
     actionLoading,
@@ -107,7 +108,7 @@ const AppointmentsPage: React.FC = () => {
         showToast("Appointment updated successfully", "success");
       } else {
         // Supply a patientId as needed; for example, if appointments are tied to a patient
-        await addAppointment({ ...values, patientId: "" });
+        await addAppointment2({ ...values });
         showToast("Appointment created successfully", "success");
       }
       setOpenDialog(false);

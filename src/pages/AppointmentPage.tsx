@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import dayjs, { Dayjs } from "dayjs";
@@ -14,6 +14,9 @@ import {
   Paper,
   Chip,
   Stack,
+  IconButton,
+  Tooltip,
+  Divider,
 } from "@mui/material";
 import {
   LocalizationProvider,
@@ -25,10 +28,14 @@ import EventIcon from "@mui/icons-material/Event";
 import PersonIcon from "@mui/icons-material/Person";
 import SaveIcon from "@mui/icons-material/Save";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import EditIcon from "@mui/icons-material/Edit";
+import EuroIcon from "@mui/icons-material/Euro";
 import { useAppointmentDetails } from "../features/appointments/hooks/useAppointmentDetails";
 import { Appointment } from "../features/appointments/types";
 import { useToast } from "../contexts/ToastContext";
 import { useAppNavigation } from "../hooks/useAppNavigation";
+import PatientSelector from "../features/patients/components/PatientSelector";
+import { Patient } from "../features/patients/types";
 
 type FormValues = {
   date: Dayjs | null;
@@ -56,6 +63,8 @@ const AppointmentPage: React.FC = () => {
   const { toAppointments } = useAppNavigation();
   const { appointment, loading, saveAppointment } = useAppointmentDetails(id);
   const { showToast } = useToast();
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [isEditingPatient, setIsEditingPatient] = useState(false);
 
   const {
     control,
@@ -84,6 +93,9 @@ const AppointmentPage: React.FC = () => {
         status: appointment.status,
         cost: appointment.cost || 0,
       });
+      if (appointment.patient) {
+        setSelectedPatient(appointment.patient);
+      }
     }
   }, [appointment, reset]);
 
@@ -92,6 +104,12 @@ const AppointmentPage: React.FC = () => {
       showToast("Date and time are required", "error");
       return;
     }
+
+    if (!selectedPatient && !appointment?.patient) {
+      showToast("Please select a patient", "error");
+      return;
+    }
+
     const combinedDateTime = formData.date
       .hour(formData.time.hour())
       .minute(formData.time.minute())
@@ -105,15 +123,7 @@ const AppointmentPage: React.FC = () => {
       obs: formData.obs,
       status: formData.status,
       cost: formData.cost,
-      patient: appointment?.patient || {
-        id: "",
-        name: "",
-        phone: "",
-        birth: "",
-        gender: "",
-        address: "",
-        job: "",
-      },
+      patient: selectedPatient || appointment?.patient,
     };
 
     await saveAppointment(payload);
@@ -127,7 +137,7 @@ const AppointmentPage: React.FC = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          height: "calc(100vh - 64px)", // Adjust based on your header height
+          height: "calc(100vh - 64px)",
           backgroundColor: "#f5f5f5",
         }}
       >
@@ -137,141 +147,228 @@ const AppointmentPage: React.FC = () => {
   }
 
   return (
-    <Box
-      sx={{
-        padding: 3,
-        backgroundColor: "#f5f5f5",
-        minHeight: "calc(100vh - 64px)",
-      }}
-    >
-      <Container>
-        {/* Header Section */}
-        <Box sx={{ mb: 4 }}>
-          <Button
-            startIcon={<ArrowBackIcon />}
-            onClick={() => toAppointments()}
-            sx={{ mb: 2 }}
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <Box sx={{ backgroundColor: "#f5f5f5", minHeight: "calc(100vh - 64px)" }}>
+        <Container maxWidth="lg" sx={{ py: 3 }}>
+          {/* Header */}
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+            sx={{ mb: 3 }}
           >
-            Back to Appointments
-          </Button>
-          <Stack direction="row" alignItems="center" spacing={2}>
-            <EventIcon color="primary" sx={{ fontSize: 32 }} />
-            <Typography variant="h4" component="h1">
-              {id ? "Edit Appointment" : "New Appointment"}
-            </Typography>
-          </Stack>
-        </Box>
-
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          {/* Patient Information Card */}
-          {appointment?.patient && (
-            <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
-              <Stack
-                direction="row"
-                alignItems="center"
-                spacing={2}
-                sx={{ mb: 2 }}
+            <Stack direction="row" alignItems="center" spacing={2}>
+              <IconButton
+                onClick={() => toAppointments()}
+                color="primary"
+                sx={{ p: 1 }}
               >
-                <PersonIcon color="primary" />
-                <Typography variant="h6">Patient Information</Typography>
-              </Stack>
-              <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    label="Patient Name"
-                    value={appointment.patient.name}
-                    InputProps={{ readOnly: true }}
-                    fullWidth
-                    variant="filled"
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    label="Phone"
-                    value={appointment.patient.phone}
-                    InputProps={{ readOnly: true }}
-                    fullWidth
-                    variant="filled"
-                  />
-                </Grid>
-              </Grid>
-            </Paper>
-          )}
+                <ArrowBackIcon />
+              </IconButton>
+              <Typography variant="h5" component="h1">
+                {id ? "Edit Appointment" : "New Appointment"}
+              </Typography>
+            </Stack>
+            <Chip
+              icon={<EventIcon />}
+              label={dayjs().format("MMMM D, YYYY")}
+              color="primary"
+              variant="outlined"
+            />
+          </Stack>
 
-          {/* Appointment Form */}
-          <Paper elevation={2} sx={{ p: 3 }}>
+          {/* Main Content */}
+          <Paper elevation={1} sx={{ p: 3 }}>
             <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
               <Grid container spacing={3}>
-                {/* Date and Time Section */}
+                {/* Patient Information */}
                 <Grid item xs={12}>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{ mb: 2, fontWeight: 500 }}
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    spacing={2}
+                    sx={{ mb: 2 }}
                   >
-                    Schedule Details
-                  </Typography>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
-                      <Controller
-                        name="date"
-                        control={control}
-                        rules={{ required: "Appointment date is required" }}
-                        render={({ field }) => (
-                          <DatePicker
-                            label="Date"
-                            value={field.value}
-                            onChange={(newValue) => field.onChange(newValue)}
-                            slotProps={{
-                              textField: {
-                                fullWidth: true,
-                                error: !!errors.date,
-                                helperText: errors.date?.message,
-                              },
-                            }}
-                          />
-                        )}
-                      />
+                    <PersonIcon color="primary" />
+                    <Typography variant="h6">Patient Information</Typography>
+                    {(selectedPatient || appointment?.patient) &&
+                      !isEditingPatient && (
+                        <Tooltip title="Change Patient">
+                          <IconButton
+                            size="small"
+                            onClick={() => setIsEditingPatient(true)}
+                          >
+                            <EditIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                  </Stack>
+                  {(selectedPatient || appointment?.patient) &&
+                  !isEditingPatient ? (
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          label="Name"
+                          value={
+                            (selectedPatient || appointment?.patient)?.name
+                          }
+                          InputProps={{ readOnly: true }}
+                          fullWidth
+                          variant="outlined"
+                          size="small"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          label="Phone"
+                          value={
+                            (selectedPatient || appointment?.patient)?.phone
+                          }
+                          InputProps={{ readOnly: true }}
+                          fullWidth
+                          variant="outlined"
+                          size="small"
+                        />
+                      </Grid>
                     </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <Controller
-                        name="time"
-                        control={control}
-                        rules={{ required: "Appointment time is required" }}
-                        render={({ field }) => (
-                          <TimePicker
-                            label="Time"
-                            value={field.value}
-                            onChange={(newValue) => field.onChange(newValue)}
-                            slotProps={{
-                              textField: {
-                                fullWidth: true,
-                                error: !!errors.time,
-                                helperText: errors.time?.message,
-                              },
-                            }}
-                          />
-                        )}
-                      />
-                    </Grid>
-                  </Grid>
+                  ) : (
+                    <PatientSelector
+                      selectedPatient={selectedPatient}
+                      onPatientSelect={(patient) => {
+                        setSelectedPatient(patient);
+                        setIsEditingPatient(false);
+                      }}
+                    />
+                  )}
                 </Grid>
 
-                {/* Appointment Details Section */}
                 <Grid item xs={12}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-                    Appointment Details
-                  </Typography>
+                  <Divider />
                 </Grid>
 
+                {/* Date and Time */}
+                <Grid item xs={12} sm={6} md={3}>
+                  <Controller
+                    name="date"
+                    control={control}
+                    rules={{ required: "Date is required" }}
+                    render={({ field }) => (
+                      <DatePicker
+                        label="Date"
+                        value={field.value}
+                        onChange={(newValue) => field.onChange(newValue)}
+                        slotProps={{
+                          textField: {
+                            fullWidth: true,
+                            size: "small",
+                            error: !!errors.date,
+                            helperText: errors.date?.message,
+                          },
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6} md={3}>
+                  <Controller
+                    name="time"
+                    control={control}
+                    rules={{ required: "Time is required" }}
+                    render={({ field }) => (
+                      <TimePicker
+                        label="Time"
+                        value={field.value}
+                        onChange={(newValue) => field.onChange(newValue)}
+                        slotProps={{
+                          textField: {
+                            fullWidth: true,
+                            size: "small",
+                            error: !!errors.time,
+                            helperText: errors.time?.message,
+                          },
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6} md={3}>
+                  <Controller
+                    name="status"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        label="Status"
+                        select
+                        fullWidth
+                        size="small"
+                        value={field.value}
+                        onChange={field.onChange}
+                      >
+                        {Object.entries(statusLabels).map(([key, label]) => (
+                          <MenuItem key={key} value={key}>
+                            <Chip
+                              label={label}
+                              size="small"
+                              color={
+                                statusColors[key as keyof typeof statusColors]
+                              }
+                            />
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    )}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6} md={3}>
+                  <Controller
+                    name="cost"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        label="Fee"
+                        type="number"
+                        fullWidth
+                        size="small"
+                        value={field.value}
+                        onChange={field.onChange}
+                        InputProps={{
+                          startAdornment: (
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                mr: 1,
+                                color: "text.secondary",
+                              }}
+                            >
+                              <EuroIcon fontSize="small" />
+                            </Box>
+                          ),
+                          inputProps: { min: 0, step: 0.01 },
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+
+                <Grid item xs={12}>
+                  <Divider />
+                </Grid>
+
+                {/* Clinical Information */}
                 <Grid item xs={12}>
                   <Controller
                     name="motive"
                     control={control}
-                    rules={{ required: "Motive is required" }}
+                    rules={{ required: "Reason is required" }}
                     render={({ field }) => (
                       <TextField
-                        label="Motive"
+                        label="Reason for Visit"
                         fullWidth
+                        size="small"
                         value={field.value}
                         onChange={field.onChange}
                         error={!!errors.motive}
@@ -287,63 +384,13 @@ const AppointmentPage: React.FC = () => {
                     control={control}
                     render={({ field }) => (
                       <TextField
-                        label="Observations"
+                        label="Clinical Notes"
                         fullWidth
                         multiline
-                        minRows={3}
+                        minRows={4}
                         value={field.value}
                         onChange={field.onChange}
-                      />
-                    )}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <Controller
-                    name="status"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        label="Status"
-                        select
-                        fullWidth
-                        value={field.value}
-                        onChange={field.onChange}
-                      >
-                        {Object.entries(statusLabels).map(([key, label]) => (
-                          <MenuItem key={key} value={key}>
-                            <Chip
-                              label={label}
-                              size="small"
-                              color={
-                                statusColors[key as keyof typeof statusColors]
-                              }
-                              sx={{ mr: 1 }}
-                            />
-                          </MenuItem>
-                        ))}
-                      </TextField>
-                    )}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <Controller
-                    name="cost"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        label="Cost (€)"
-                        type="number"
-                        fullWidth
-                        value={field.value}
-                        onChange={field.onChange}
-                        InputProps={{
-                          inputProps: { min: 0, step: 0.01 },
-                          startAdornment: (
-                            <Typography sx={{ mr: 1 }}>€</Typography>
-                          ),
-                        }}
+                        placeholder="Observations, diagnosis, treatment plan..."
                       />
                     )}
                   />
@@ -353,13 +400,17 @@ const AppointmentPage: React.FC = () => {
               {/* Action Buttons */}
               <Box
                 sx={{
-                  mt: 4,
+                  mt: 3,
                   display: "flex",
                   justifyContent: "flex-end",
                   gap: 2,
                 }}
               >
-                <Button variant="outlined" onClick={() => toAppointments()}>
+                <Button
+                  variant="outlined"
+                  onClick={() => toAppointments()}
+                  color="inherit"
+                >
                   Cancel
                 </Button>
                 <Button
@@ -367,14 +418,14 @@ const AppointmentPage: React.FC = () => {
                   type="submit"
                   startIcon={<SaveIcon />}
                 >
-                  Save Appointment
+                  Save
                 </Button>
               </Box>
             </Box>
           </Paper>
-        </LocalizationProvider>
-      </Container>
-    </Box>
+        </Container>
+      </Box>
+    </LocalizationProvider>
   );
 };
 

@@ -49,6 +49,7 @@ export const useAppointments = (
   // Use the modified appointment actions that perform in-memory updates
   const {
     addAppointment,
+    addAppointment2,
     editAppointment,
     toggleAppointmentStatus,
     cancelAppointment,
@@ -84,6 +85,7 @@ export const useAppointments = (
     error,
     actionLoading,
     addAppointment,
+    addAppointment2,
     editAppointment,
     toggleAppointmentStatus,
     cancelAppointment,
