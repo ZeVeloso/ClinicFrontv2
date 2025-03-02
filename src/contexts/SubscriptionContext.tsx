@@ -237,17 +237,25 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const createCheckout = async (priceId: string): Promise<void> => {
     try {
+      console.log("1");
       if (!window.Paddle) {
         throw new Error("Payment processor not loaded");
       }
 
-      await api.post("/paddle/checkout", { priceId });
+      // Get the transaction ID from your backend
+      const { data } = await api.post("/paddle/checkout", { priceId });
+      console.log(data.transactionId);
+      if (!data.transactionId) {
+        throw new Error("No transaction ID received from server");
+      }
 
-      // Open Paddle checkout
+      console.log("Opening checkout with transaction ID:", data.transactionId);
+
+      // Open Paddle checkout with the transaction ID
       window.Paddle.Checkout.open({
-        product: priceId,
-        email: "lordd4rkcraft@gmail.com", // If your API returns the user's email
+        override: data.transactionId, // Use the transaction ID from your backend
         successCallback: () => {
+          console.log("3");
           // Handle successful checkout
           showToast("Subscription created successfully!", "success");
           fetchSubscriptionData();
@@ -259,6 +267,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
           console.log("Checkout closed");
         },
       });
+      console.log("2");
     } catch (err) {
       console.error("Error creating checkout:", err);
       showToast("Failed to create checkout", "error");

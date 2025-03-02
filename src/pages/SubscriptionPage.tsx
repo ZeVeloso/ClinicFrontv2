@@ -71,12 +71,17 @@ const SubscriptionPage: React.FC = () => {
   const handleSubscribe = async (plan: Plan) => {
     try {
       setProcessingAction(plan.id);
+      console.log(
+        `Initiating checkout for plan: ${plan.name} (${plan.priceId})`
+      );
+
       await createCheckout(plan.priceId);
+
+      console.log("Checkout process initiated successfully");
       // The checkout is now handled by Paddle.js in the context
-      // No need to redirect manually
     } catch (error) {
-      console.error("Error during checkout:", error);
-      showToast("Failed to create checkout", "error");
+      console.error("Error during checkout process:", error);
+      showToast("Failed to create checkout. Please try again later.", "error");
     } finally {
       setProcessingAction(null);
     }
