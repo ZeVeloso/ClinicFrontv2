@@ -33,7 +33,8 @@ import {
   AccessTime as AccessTimeIcon,
   Check as CheckIcon,
 } from "@mui/icons-material";
-import { useSubscription, Plan } from "../contexts/SubscriptionContext";
+import { useSubscription } from "../contexts/SubscriptionContext";
+import { Plan } from "../types/subscription";
 import { formatDate, formatCurrency } from "../utils/formatters";
 import { useToast } from "../contexts/ToastContext";
 const SubscriptionPage: React.FC = () => {
