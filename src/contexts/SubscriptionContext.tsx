@@ -241,12 +241,12 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
         throw new Error("Payment processor not loaded");
       }
 
-      const { data } = await api.post("/paddle/checkout", { priceId });
+      await api.post("/paddle/checkout", { priceId });
 
       // Open Paddle checkout
       window.Paddle.Checkout.open({
         product: priceId,
-        email: data.email, // If your API returns the user's email
+        email: "lordd4rkcraft@gmail.com", // If your API returns the user's email
         successCallback: () => {
           // Handle successful checkout
           showToast("Subscription created successfully!", "success");
