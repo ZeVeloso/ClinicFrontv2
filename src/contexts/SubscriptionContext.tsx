@@ -1,43 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useAuth } from "./AuthContext";
 import { useToast } from "./ToastContext";
-import axios from "axios";
-
-// Types
-export interface Plan {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  currency: string;
-  interval: "monthly" | "yearly";
-  features: string[];
-  priceId: string;
-  popular?: boolean;
-}
-
-export interface Subscription {
-  id: string;
-  status: "active" | "paused" | "cancelled" | "past_due";
-  planId: string;
-  currentPeriodEnd: string;
-  cancelAtPeriodEnd: boolean;
-  createdAt: string;
-  updatedAt: string;
-  nextPayment?: {
-    amount: number;
-    currency: string;
-    date: string;
-  };
-}
-
-export interface SubscriptionHistory {
-  id: string;
-  date: string;
-  amount: number;
-  currency: string;
-  status: "completed" | "refunded" | "failed";
-}
+import { Paddle } from "@paddle/paddle-js";
+import * as paddleApi from "../api/paddle";
+import { Plan, Subscription, SubscriptionHistory } from "../types/subscription";
 
 interface SubscriptionContextType {
   plans: Plan[];
@@ -54,30 +20,11 @@ interface SubscriptionContextType {
   refreshSubscriptionData: () => Promise<void>;
 }
 
-// Add Paddle type definition
-declare global {
-  interface Window {
-    Paddle?: {
-      Setup: (config: { vendor: number; eventCallback?: Function }) => void;
-      Checkout: {
-        open: (config: any) => void;
-      };
-      Environment: {
-        set: (environment: string) => void;
-      };
-    };
-  }
-}
-
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(
   undefined
 );
 
-const apiUrl = import.meta.env.VITE_API_URL;
-const PADDLE_VENDOR_ID = import.meta.env.VITE_PADDLE_VENDOR_ID || 12345; // Replace with your actual vendor ID
-const IS_PADDLE_SANDBOX = import.meta.env.VITE_PADDLE_SANDBOX === "true";
-
-// Sample plans - replace with your actual plans
+// Sample plans - replace with your actual plans from API when available
 const SUBSCRIPTION_PLANS: Plan[] = [
   {
     id: "basic",
@@ -143,60 +90,27 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
   >([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Configure axios with auth token
-  const api = axios.create({
-    baseURL: apiUrl,
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  api.interceptors.request.use(
-    (config) => {
-      if (accessToken) {
-        config.headers.Authorization = `Bearer ${accessToken}`;
-      }
-      return config;
-    },
-    (error) => Promise.reject(error)
-  );
+  const [paddle, setPaddle] = useState<Paddle | null>(null);
 
   // Initialize Paddle.js
   useEffect(() => {
-    // Load Paddle.js script
-    const loadPaddleJs = () => {
-      if (window.Paddle) return Promise.resolve();
-
-      return new Promise<void>((resolve, reject) => {
-        const script = document.createElement("script");
-        script.src = "https://cdn.paddle.com/paddle/paddle.js";
-        script.async = true;
-        script.onload = () => {
-          if (window.Paddle) {
-            // Initialize Paddle
-            window.Paddle.Setup({ vendor: Number(PADDLE_VENDOR_ID) });
-
-            // Set environment (sandbox or production)
-            if (IS_PADDLE_SANDBOX) {
-              window.Paddle.Environment.set("sandbox");
-            }
-
-            resolve();
-          } else {
-            reject(new Error("Paddle.js failed to load"));
-          }
-        };
-        script.onerror = () => reject(new Error("Failed to load Paddle.js"));
-        document.head.appendChild(script);
-      });
+    const loadPaddle = async () => {
+      try {
+        const paddleInstance = await paddleApi.initializePaddleClient();
+        if (paddleInstance) {
+          console.log("Paddle initialized successfully");
+          setPaddle(paddleInstance);
+        } else {
+          throw new Error("Failed to initialize Paddle");
+        }
+      } catch (err) {
+        console.error("Error initializing Paddle:", err);
+        showToast("Failed to initialize payment processor", "error");
+      }
     };
 
-    loadPaddleJs().catch((err) => {
-      console.error("Error loading Paddle.js:", err);
-      showToast("Failed to load payment processor", "error");
-    });
-  }, []);
+    loadPaddle();
+  }, [showToast]);
 
   const fetchSubscriptionData = async () => {
     if (!accessToken) {
@@ -210,7 +124,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
     setError(null);
 
     try {
-      const { data } = await api.get("/paddle/subscriptions");
+      const data = await paddleApi.getSubscriptions();
 
       if (data.subscriptions && data.subscriptions.length > 0) {
         setCurrentSubscription(data.subscriptions[0]);
@@ -237,37 +151,37 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const createCheckout = async (priceId: string): Promise<void> => {
     try {
-      console.log("1");
-      if (!window.Paddle) {
-        throw new Error("Payment processor not loaded");
+      console.log("Starting checkout process for price ID:", priceId);
+
+      if (!paddle) {
+        throw new Error("Payment processor not initialized");
       }
 
-      // Get the transaction ID from your backend
-      const { data } = await api.post("/paddle/checkout", { priceId });
-      console.log(data.transactionId);
-      if (!data.transactionId) {
-        throw new Error("No transaction ID received from server");
+      // Get checkout data from your backend
+      const data = await paddleApi.createCheckout(priceId);
+      console.log("Backend response:", data);
+
+      // Check if we have a transaction ID from the backend
+      if (data.transactionId) {
+        console.log("Using transaction ID from backend:", data.transactionId);
+        // Open checkout with transaction ID
+        paddle.Checkout.open({
+          transactionId: data.transactionId,
+        });
+      } else {
+        // Open checkout with items list
+        console.log("Opening checkout with price ID:", priceId);
+        paddle.Checkout.open({
+          items: [
+            {
+              priceId: priceId,
+              quantity: 1,
+            },
+          ],
+        });
       }
 
-      console.log("Opening checkout with transaction ID:", data.transactionId);
-
-      // Open Paddle checkout with the transaction ID
-      window.Paddle.Checkout.open({
-        override: data.transactionId, // Use the transaction ID from your backend
-        successCallback: () => {
-          console.log("3");
-          // Handle successful checkout
-          showToast("Subscription created successfully!", "success");
-          fetchSubscriptionData();
-          // Redirect to success page if needed
-          window.location.href = "/app/checkout/success";
-        },
-        closeCallback: () => {
-          // Handle checkout close
-          console.log("Checkout closed");
-        },
-      });
-      console.log("2");
+      console.log("Paddle checkout opened");
     } catch (err) {
       console.error("Error creating checkout:", err);
       showToast("Failed to create checkout", "error");
@@ -279,7 +193,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
     subscriptionId: string
   ): Promise<boolean> => {
     try {
-      await api.post(`/paddle/subscriptions/${subscriptionId}/cancel`);
+      await paddleApi.cancelSubscription(subscriptionId);
       await fetchSubscriptionData();
       showToast("Subscription cancelled successfully", "success");
       return true;
@@ -295,9 +209,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
     priceId: string
   ): Promise<boolean> => {
     try {
-      await api.post(`/paddle/subscriptions/${subscriptionId}/update`, {
-        priceId,
-      });
+      await paddleApi.updateSubscription(subscriptionId, priceId);
       await fetchSubscriptionData();
       showToast("Subscription updated successfully", "success");
       return true;
