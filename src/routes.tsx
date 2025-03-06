@@ -2,6 +2,8 @@ import React, { lazy, Suspense } from "react";
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import SubscriptionProtectedRoute from "./features/subscription/components/SubscriptionProtectedRoute";
+import { SubscriptionProvider } from "./features/subscription/hooks/useSubscription";
 //import Navbar from "./components/navigation/NavBar";
 import SignupPage from "./pages/SignupPage";
 import LoginPage from "./pages/LoginPage";
@@ -27,13 +29,16 @@ const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const CheckoutSuccessPage = lazy(() => import("./pages/CheckoutSuccessPage"));
 const SubscriptionPage = lazy(() => import("./pages/SubscriptionPage"));
 
+// Basic protected app (auth only)
 const ProtectedApp: React.FC = () => (
   <ProtectedRoute>
-    <MainLayout>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Outlet />
-      </Suspense>
-    </MainLayout>
+    <SubscriptionProvider>
+      <MainLayout>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Outlet />
+        </Suspense>
+      </MainLayout>
+    </SubscriptionProvider>
   </ProtectedRoute>
 );
 
@@ -55,27 +60,57 @@ const router = createBrowserRouter([
       },
       {
         path: "dashboard",
-        element: <DashboardPage />,
+        element: (
+          <SubscriptionProtectedRoute>
+            <DashboardPage />
+          </SubscriptionProtectedRoute>
+        ),
       },
       {
         path: "patients",
-        element: <PatientsPage />,
+        element: (
+          <SubscriptionProtectedRoute requiredFeatures={["Patient Management"]}>
+            <PatientsPage />
+          </SubscriptionProtectedRoute>
+        ),
       },
       {
         path: "appointments",
-        element: <AppointmentsPage />,
+        element: (
+          <SubscriptionProtectedRoute
+            requiredFeatures={["Appointment Scheduling"]}
+          >
+            <AppointmentsPage />
+          </SubscriptionProtectedRoute>
+        ),
       },
       {
         path: "patients/:id",
-        element: <PatientPage />,
+        element: (
+          <SubscriptionProtectedRoute requiredFeatures={["Patient Management"]}>
+            <PatientPage />
+          </SubscriptionProtectedRoute>
+        ),
       },
       {
         path: "appointments/:id",
-        element: <AppointmentPage />,
+        element: (
+          <SubscriptionProtectedRoute
+            requiredFeatures={["Appointment Scheduling"]}
+          >
+            <AppointmentPage />
+          </SubscriptionProtectedRoute>
+        ),
       },
       {
         path: "management",
-        element: <ManagementPage />,
+        element: (
+          <SubscriptionProtectedRoute
+            requiredFeatures={["Analytics Dashboard"]}
+          >
+            <ManagementPage />
+          </SubscriptionProtectedRoute>
+        ),
       },
       {
         path: "settings",

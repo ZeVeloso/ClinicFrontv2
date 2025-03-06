@@ -54,7 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Compute isAuthenticated from the accessToken presence
   const isAuthenticated = Boolean(accessToken);
-  console.log("isAuthenticated", isAuthenticated);
+
   return (
     <AuthContext.Provider
       value={{
