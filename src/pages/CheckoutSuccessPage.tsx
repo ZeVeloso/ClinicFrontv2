@@ -93,11 +93,7 @@ const CheckoutSuccessPage: React.FC = () => {
               successfully updated.
               {currentSubscription && (
                 <Box component="span" display="block" mt={1}>
-                  Your subscription is now active and will renew on{" "}
-                  {new Date(
-                    currentSubscription.currentPeriodEnd
-                  ).toLocaleDateString()}
-                  .
+                  Your subscription is now active and will renew on
                 </Box>
               )}
             </Typography>

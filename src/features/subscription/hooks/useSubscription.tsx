@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { useAuth } from "./AuthContext";
-import { useToast } from "./ToastContext";
-import { Plan, PaddlePlan, Subscription } from "../types/subscription";
+import { useAuth } from "../../../contexts/AuthContext";
+import { useToast } from "../../../contexts/ToastContext";
+import { Plan, PaddlePlan, Subscription } from "../types";
 import {
   getPlans as fetchPaddlePlans,
   getSubscriptions,
@@ -11,7 +11,35 @@ import {
   resumeSubscription as paddleResumeSubscription,
   previewProration as paddlePreviewProration,
   initializePaddleClient,
-} from "../api/paddle";
+} from "../../../api/paddle";
+
+// Feature list for each plan
+const PLAN_FEATURES = [
+  "Patient Management",
+  "Appointment Scheduling",
+  "Patient Portal",
+  "Analytics Dashboard",
+];
+
+// Feature access mapping by interval
+const FEATURE_ACCESS_MAP: Record<string, string[]> = {
+  month: PLAN_FEATURES,
+  year: PLAN_FEATURES,
+};
+
+const transformPaddlePlan = (paddlePlan: PaddlePlan): Plan => {
+  const isYearly = paddlePlan.interval === "year";
+
+  return {
+    ...paddlePlan,
+    name: paddlePlan.name || "Unnamed Plan",
+    description: paddlePlan.description || "No description available",
+    features: PLAN_FEATURES,
+    popular: isYearly,
+    priceId: paddlePlan.id,
+    trialPeriod: paddlePlan.trialPeriod,
+  };
+};
 
 interface SubscriptionContextType {
   plans: Plan[];
@@ -38,31 +66,6 @@ interface SubscriptionContextType {
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(
   undefined
 );
-
-// Feature list for each plan
-const PLAN_FEATURES = [
-  "Patient Management",
-  "Appointment Scheduling",
-  "Patient Portal",
-  "Analytics Dashboard",
-];
-
-// Feature access mapping by interval
-const FEATURE_ACCESS_MAP: Record<string, string[]> = {
-  month: PLAN_FEATURES,
-  year: PLAN_FEATURES,
-};
-
-const transformPaddlePlan = (paddlePlan: PaddlePlan): Plan => {
-  const isYearly = paddlePlan.interval === "year";
-
-  return {
-    ...paddlePlan,
-    features: PLAN_FEATURES,
-    popular: isYearly, // Make yearly plan popular
-    priceId: paddlePlan.id, // Map id to priceId for compatibility
-  };
-};
 
 export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -110,7 +113,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
 
     try {
       const { subscriptions } = await getSubscriptions();
-      setCurrentSubscription(subscriptions);
+      setCurrentSubscription(subscriptions as Subscription);
     } catch (err) {
       console.error("Error fetching subscription data:", err);
       setError("Failed to load subscription information");
