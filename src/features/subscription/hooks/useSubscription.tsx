@@ -234,7 +234,8 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
   const hasActiveSubscription = (): boolean => {
     return (
       !!currentSubscription &&
-      currentSubscription.status === "active" &&
+      (currentSubscription.status === "active" ||
+        currentSubscription.status === "trialing") &&
       currentSubscription.items?.length > 0
     );
   };
