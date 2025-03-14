@@ -382,7 +382,7 @@ const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({
               </Grid>
 
               <Box>
-                {currentSubscription.status === "active" ? (
+                {["active", "trialing"].includes(currentSubscription.status) ? (
                   <Button
                     variant="outlined"
                     color="error"

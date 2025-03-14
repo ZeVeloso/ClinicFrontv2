@@ -5,13 +5,12 @@ import {
   updateAppointment,
 } from "../../../api/appointments";
 import { Appointment } from "../types";
-import { useNavigate } from "react-router-dom";
-
+//import { useNavigate } from "react-router-dom";
 export const useAppointmentActions = (
   appointments: Appointment[],
   setAppointments: React.Dispatch<React.SetStateAction<Appointment[]>>
 ) => {
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
   const addAppointment = useCallback(
     async (appointmentData: any) => {
@@ -43,7 +42,8 @@ export const useAppointmentActions = (
   );
 
   const editAppointment = (appointmentData: any) => {
-    navigate(`/appointments/${appointmentData.id}`);
+    updateAppointment(appointmentData.id, appointmentData);
+    //navigate(`/appointments/${appointmentData.id}`);
   };
 
   const toggleAppointmentStatus = useCallback(

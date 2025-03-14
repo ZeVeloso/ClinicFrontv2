@@ -122,12 +122,12 @@ const AppointmentPage: React.FC = () => {
       motive: formData.motive,
       obs: formData.obs,
       status: formData.status,
-      cost: formData.cost,
+      cost: Number(formData.cost),
       patient: selectedPatient || appointment?.patient,
     };
 
     await saveAppointment(payload);
-    toAppointments();
+    //toAppointments();
   };
 
   if (loading) {

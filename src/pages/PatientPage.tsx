@@ -129,7 +129,7 @@ const PatientDetailsPage: React.FC = () => {
             setIsFormOpen(true);
           }}
         >
-          New Appointment
+          New
         </Button>
       </Stack>
 

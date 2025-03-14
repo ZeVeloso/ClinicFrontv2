@@ -257,7 +257,7 @@ export default function Dashboard() {
         // Map appointments to calendar events
         const calendarEvents = data.data.map((appointment: any) => ({
           id: appointment.id,
-          title: appointment.patient.name,
+          title: appointment.patient ? appointment.patient.name : "New Patient",
           start: new Date(appointment.date),
           end: new Date(appointment.date),
           details: appointment.obs,

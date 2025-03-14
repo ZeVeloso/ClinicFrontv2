@@ -102,8 +102,6 @@ const SettingsPage: React.FC = () => {
     phone: "+1 234 567 890",
     language: "en",
     currency: "EUR",
-    timeFormat: "24h",
-    dateFormat: "DD/MM/YYYY",
   });
 
   const languages = [
@@ -117,17 +115,6 @@ const SettingsPage: React.FC = () => {
     { value: "EUR", label: "Euro (€)" },
     { value: "USD", label: "US Dollar ($)" },
     { value: "GBP", label: "British Pound (£)" },
-  ];
-
-  const timeFormats = [
-    { value: "12h", label: "12-hour" },
-    { value: "24h", label: "24-hour" },
-  ];
-
-  const dateFormats = [
-    { value: "DD/MM/YYYY", label: "DD/MM/YYYY" },
-    { value: "MM/DD/YYYY", label: "MM/DD/YYYY" },
-    { value: "YYYY-MM-DD", label: "YYYY-MM-DD" },
   ];
 
   const handleSettingChange = (field: string, value: string) => {
@@ -212,36 +199,6 @@ const SettingsPage: React.FC = () => {
               fullWidth
             >
               {currencies.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </TextField>
-            <TextField
-              select
-              label="Time Format"
-              value={settings.timeFormat}
-              onChange={(e) =>
-                handleSettingChange("timeFormat", e.target.value)
-              }
-              fullWidth
-            >
-              {timeFormats.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </TextField>
-            <TextField
-              select
-              label="Date Format"
-              value={settings.dateFormat}
-              onChange={(e) =>
-                handleSettingChange("dateFormat", e.target.value)
-              }
-              fullWidth
-            >
-              {dateFormats.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
                 </MenuItem>
