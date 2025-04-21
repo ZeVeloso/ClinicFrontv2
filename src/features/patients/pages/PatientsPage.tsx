@@ -21,12 +21,12 @@ import {
   FilterList as FilterIcon,
 } from "@mui/icons-material";
 import InputAdornment from "@mui/material/InputAdornment";
-import GenericGrid from "../components/common/GenericGrid";
-import PatientForm from "../features/patients/components/PatientForm";
-import { formatDate } from "../utils/dateHelper";
-import { usePatients } from "../features/patients/hooks/usePatients";
-import { Patient } from "../features/patients/types";
-import { useAppNavigation } from "../hooks/useAppNavigation";
+import GenericGrid from "../../../components/common/GenericGrid";
+import PatientForm from "../components/PatientForm";
+import { formatDate } from "@utils/dateHelper";
+import { usePatients } from "../hooks/usePatients";
+import { Patient } from "../types";
+import { useAppNavigation } from "../../../hooks/useAppNavigation";
 
 const PatientsPage: React.FC = () => {
   // local state for filtering, pagination, and dialog control

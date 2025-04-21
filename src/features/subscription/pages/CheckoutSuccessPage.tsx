@@ -10,8 +10,8 @@ import {
   Stack,
 } from "@mui/material";
 import { CheckCircle as CheckCircleIcon } from "@mui/icons-material";
-import { useSubscription } from "../contexts/SubscriptionContext";
-import { APP_PATHS } from "../config/navigationConfig";
+import { useSubscription } from "@contexts/SubscriptionContext";
+import { APP_PATHS } from "@config/navigationConfig";
 
 const CheckoutSuccessPage: React.FC = () => {
   const navigate = useNavigate();

@@ -2,6 +2,7 @@ export const PUBLIC_PATHS = {
   ROOT: "/",
   LOGIN: "/login",
   SIGNUP: "/signup",
+  RESET_REQUEST: "/forgot-password",
 } as const;
 
 export const APP_PATHS = {

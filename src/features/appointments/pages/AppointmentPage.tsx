@@ -30,12 +30,12 @@ import SaveIcon from "@mui/icons-material/Save";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import EditIcon from "@mui/icons-material/Edit";
 import EuroIcon from "@mui/icons-material/Euro";
-import { useAppointmentDetails } from "../features/appointments/hooks/useAppointmentDetails";
-import { Appointment } from "../features/appointments/types";
-import { useToast } from "../contexts/ToastContext";
-import { useAppNavigation } from "../hooks/useAppNavigation";
-import PatientSelector from "../features/patients/components/PatientSelector";
-import { Patient } from "../features/patients/types";
+import { useAppointmentDetails } from "@features/appointments/hooks/useAppointmentDetails";
+import { Appointment } from "@features/appointments/types";
+import { useToast } from "@contexts/ToastContext";
+import { useAppNavigation } from "@hooks/useAppNavigation";
+import PatientSelector from "@features/patients/components/PatientSelector";
+import { Patient } from "@features/patients/types";
 
 type FormValues = {
   date: Dayjs | null;

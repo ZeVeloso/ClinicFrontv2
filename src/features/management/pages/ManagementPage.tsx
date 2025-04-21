@@ -21,8 +21,8 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import { fetchManagementStats, fetchRevenueData } from "../api/management";
-import { ManagementStats, Revenue } from "../features/management/types";
+import { fetchManagementStats, fetchRevenueData } from "@api/management";
+import { ManagementStats, Revenue } from "@features/management/types";
 import { Alert, Skeleton } from "@mui/material";
 
 const ManagementPage = () => {

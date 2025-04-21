@@ -17,5 +17,21 @@ export const getCurrentUser = async () => {
 };
 
 export const googleLogin = async (token: string) => {
-  return axiosInstance.post('/auth/google', { token });
+  return axiosInstance.post("/auth/google", { token });
+};
+
+// src/api/auth.ts
+export const requestPasswordReset = async (email: string) => {
+  const response = await axiosInstance.post("/auth/password-reset/request", {
+    email,
+  });
+  return response.data;
+};
+
+export const resetPassword = async (token: string, newPassword: string) => {
+  const response = await axiosInstance.post("/auth/password-reset/reset", {
+    token,
+    newPassword,
+  });
+  return response.data;
 };

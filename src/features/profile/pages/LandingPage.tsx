@@ -22,7 +22,7 @@ import {
   Timeline,
   Security,
 } from "@mui/icons-material";
-import { useAppNavigation } from "../hooks/useAppNavigation";
+import { useAppNavigation } from "@hooks/useAppNavigation";
 
 const LandingPage: React.FC = () => {
   const theme = useTheme();

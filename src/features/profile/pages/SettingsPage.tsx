@@ -19,7 +19,7 @@ import {
   Lock as LockIcon,
   Language as LanguageIcon,
 } from "@mui/icons-material";
-import { useToast } from "../contexts/ToastContext";
+import { useToast } from "@contexts/ToastContext";
 
 interface PasswordDialogProps {
   open: boolean;

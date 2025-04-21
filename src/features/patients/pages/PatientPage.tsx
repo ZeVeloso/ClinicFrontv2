@@ -27,11 +27,11 @@ import ScheduleIcon from "@mui/icons-material/Schedule";
 import CancelIcon from "@mui/icons-material/Cancel";
 import MedicalInformationIcon from "@mui/icons-material/MedicalInformation";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
-import { usePatientDetails } from "../features/patients/hooks/usePatientDetails";
-import GenericGrid from "../components/common/GenericGrid";
-import AppointmentForm from "../features/appointments/components/AppointmentForm";
-import { formatDateTime } from "../utils/dateHelper";
-import { useAppNavigation } from "../hooks/useAppNavigation";
+import { usePatientDetails } from "../hooks/usePatientDetails";
+import GenericGrid from "../../../components/common/GenericGrid";
+import AppointmentForm from "@features/appointments/components/AppointmentForm";
+import { formatDateTime } from "@utils/dateHelper";
+import { useAppNavigation } from "../../../hooks/useAppNavigation";
 
 const PatientDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();

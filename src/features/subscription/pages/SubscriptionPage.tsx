@@ -8,9 +8,9 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { AccessTime as AccessTimeIcon } from "@mui/icons-material";
-import { useSubscription } from "../features/subscription/hooks/useSubscription";
-import SubscriptionManager from "../features/subscription/components/SubscriptionManager";
-import { formatDate, formatCurrency } from "../utils/formatters";
+import { useSubscription } from "../hooks/useSubscription";
+import SubscriptionManager from "../components/SubscriptionManager";
+import { formatDate, formatCurrency } from "@utils/formatters";
 
 const SubscriptionPage: React.FC = () => {
   const { currentSubscription, loading } = useSubscription();

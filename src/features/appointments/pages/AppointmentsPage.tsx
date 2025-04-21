@@ -27,17 +27,17 @@ import {
   FilterList as FilterIcon,
 } from "@mui/icons-material";
 import ScheduleIcon from "@mui/icons-material/Schedule";
-import GenericGrid from "../components/common/GenericGrid";
-import { formatDateTime } from "../utils/dateHelper";
-import AppointmentForm from "../features/appointments/components/AppointmentForm";
+import GenericGrid from "@components/common/GenericGrid";
+import { formatDateTime } from "@utils/dateHelper";
+import AppointmentForm from "@features/appointments/components/AppointmentForm";
 import {
   useAppointments,
   AppointmentFilters,
-} from "../features/appointments/hooks/useAppointments";
-import { updateAppointment } from "../api/appointments";
-import { useToast } from "../contexts/ToastContext";
-import { useAppNavigation } from "../hooks/useAppNavigation";
-import theme from "../theme";
+} from "@features/appointments/hooks/useAppointments";
+import { updateAppointment } from "@api/appointments";
+import { useToast } from "@contexts/ToastContext";
+import { useAppNavigation } from "@hooks/useAppNavigation";
+import theme from "@/theme";
 
 const AppointmentsPage: React.FC = () => {
   const { toAppointmentDetails } = useAppNavigation();
