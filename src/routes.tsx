@@ -3,7 +3,7 @@ import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import SubscriptionProtectedRoute from "@features/subscription/components/SubscriptionProtectedRoute";
-import { SubscriptionProvider } from "@features/subscription/hooks/useSubscription";
+import { SubscriptionProvider } from "@features/subscription/providers/SubscriptionProvider";
 //import Navbar from "./components/navigation/NavBar";
 import SignupPage from "@features/auth/pages/SignupPage";
 import LoginPage from "@features/auth/pages/LoginPage";
@@ -88,7 +88,7 @@ const router = createBrowserRouter([
       {
         path: "patients",
         element: (
-          <SubscriptionProtectedRoute requiredFeatures={["Patient Management"]}>
+          <SubscriptionProtectedRoute requiredFeatures={["patient-management"]}>
             <PatientsPage />
           </SubscriptionProtectedRoute>
         ),
@@ -97,7 +97,7 @@ const router = createBrowserRouter([
         path: "appointments",
         element: (
           <SubscriptionProtectedRoute
-            requiredFeatures={["Appointment Scheduling"]}
+            requiredFeatures={["appointment-scheduling"]}
           >
             <AppointmentsPage />
           </SubscriptionProtectedRoute>
@@ -106,7 +106,7 @@ const router = createBrowserRouter([
       {
         path: "patients/:id",
         element: (
-          <SubscriptionProtectedRoute requiredFeatures={["Patient Management"]}>
+          <SubscriptionProtectedRoute requiredFeatures={["patient-management"]}>
             <PatientPage />
           </SubscriptionProtectedRoute>
         ),
@@ -115,7 +115,7 @@ const router = createBrowserRouter([
         path: "appointments/:id",
         element: (
           <SubscriptionProtectedRoute
-            requiredFeatures={["Appointment Scheduling"]}
+            requiredFeatures={["appointment-scheduling"]}
           >
             <AppointmentPage />
           </SubscriptionProtectedRoute>
@@ -125,7 +125,7 @@ const router = createBrowserRouter([
         path: "management",
         element: (
           <SubscriptionProtectedRoute
-            requiredFeatures={["Analytics Dashboard"]}
+            requiredFeatures={["analytics-dashboard"]}
           >
             <ManagementPage />
           </SubscriptionProtectedRoute>

@@ -1,21 +1,22 @@
 import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useSubscription } from "../hooks/useSubscription";
-import { useAuth } from "../../../contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { CircularProgress, Box } from "@mui/material";
 
 interface SubscriptionProtectedRouteProps {
+  /** The components to render if access is granted */
   children: React.ReactNode;
+
+  /** Optional array of feature keys required to access this route */
   requiredFeatures?: string[];
+
+  /** Optional redirect path (defaults to /app/settings/subscription) */
   redirectTo?: string;
 }
 
 /**
  * A route component that restricts access based on subscription status and features
- *
- * @param children - The components to render if access is granted
- * @param requiredFeatures - Optional array of feature keys required to access this route
- * @param redirectTo - Optional redirect path (defaults to /app/settings/subscription)
  */
 const SubscriptionProtectedRoute: React.FC<SubscriptionProtectedRouteProps> = ({
   children,

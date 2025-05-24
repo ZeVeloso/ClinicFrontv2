@@ -9,45 +9,37 @@ import {
   Tooltip,
   alpha,
   useTheme,
+  SxProps,
 } from "@mui/material";
 import { LockOutlined as LockIcon } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
+// Props interface with descriptive parameter names
 interface FeatureGuardProps {
-  /**
-   * The feature key(s) required to access the content
-   */
+  /** The feature key(s) required to access the content */
   feature: string | string[];
 
-  /**
-   * The content to render if the user has access to the feature
-   */
+  /** The content to render if the user has access to the feature */
   children: ReactNode;
 
-  /**
-   * Custom message to display when access is denied
-   */
+  /** Custom message to display when access is denied */
   fallbackMessage?: string;
 
-  /**
-   * Whether to show a fallback UI when access is denied (true)
-   * or render nothing (false)
-   */
+  /** Whether to show a fallback UI when access is denied (true) or render nothing (false) */
   showFallback?: boolean;
 
-  /**
-   * Whether to show an upgrade button in the fallback UI
-   */
+  /** Whether to show an upgrade button in the fallback UI */
   showUpgradeButton?: boolean;
 
-  /**
-   * Custom styles for the fallback container
-   */
-  fallbackSx?: Record<string, any>;
+  /** Custom styles for the fallback container */
+  fallbackSx?: SxProps;
 }
 
 /**
- * A component that conditionally renders content based on subscription feature access
+ * A component that conditionally renders content based on subscription feature access.
+ * If the user doesn't have access to the required feature(s), it can either:
+ * 1. Show a fallback UI with an upgrade prompt
+ * 2. Render nothing
  */
 const FeatureGuard: React.FC<FeatureGuardProps> = ({
   feature,
@@ -61,7 +53,7 @@ const FeatureGuard: React.FC<FeatureGuardProps> = ({
   const navigate = useNavigate();
   const { hasFeatureAccess, hasActiveSubscription } = useSubscription();
 
-  // Convert single feature to array
+  // Convert single feature to array for consistent handling
   const requiredFeatures = Array.isArray(feature) ? feature : [feature];
 
   // Check if user has access to all required features
@@ -124,10 +116,11 @@ const FeatureGuard: React.FC<FeatureGuardProps> = ({
 };
 
 /**
- * A component that wraps elements and disables them if the user doesn't have feature access
+ * A component that wraps elements and disables them if the user doesn't have feature access.
+ * Useful for UI elements that should be visible but disabled for non-subscribers.
  */
 export const FeatureDisabled: React.FC<
-  FeatureGuardProps & { disabledSx?: Record<string, any> }
+  FeatureGuardProps & { disabledSx?: SxProps }
 > = ({
   feature,
   children,

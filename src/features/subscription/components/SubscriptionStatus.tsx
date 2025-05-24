@@ -6,23 +6,27 @@ import {
   Button,
   Stack,
   useTheme,
-  alpha,
 } from "@mui/material";
-import {
-  CheckCircle as CheckCircleIcon,
-  Cancel as CancelIcon,
-  Pause as PauseIcon,
-  ArrowForward as ArrowForwardIcon,
-} from "@mui/icons-material";
+import { ArrowForward as ArrowForwardIcon } from "@mui/icons-material";
 import { useSubscription } from "../hooks/useSubscription";
 import { useNavigate } from "react-router-dom";
-import { formatDate } from "../../../utils/formatters";
+import { formatDate } from "@/utils/formatters";
+import {
+  getCurrentPlan,
+  getSubscriptionStatusInfo,
+} from "../utils/subscription-utils";
 
 interface SubscriptionStatusProps {
+  /** Whether to show the manage button to navigate to subscription page */
   showManageButton?: boolean;
+
+  /** Whether to display in compact mode (reduced content) */
   compact?: boolean;
 }
 
+/**
+ * Displays the current subscription status with visual indicators
+ */
 const SubscriptionStatus: React.FC<SubscriptionStatusProps> = ({
   showManageButton = true,
   compact = false,
@@ -33,53 +37,14 @@ const SubscriptionStatus: React.FC<SubscriptionStatusProps> = ({
     useSubscription();
 
   // Find current plan details
-  const currentPlan = currentSubscription
-    ? plans.find((plan) => {
-        const currentPriceId = currentSubscription.items[0]?.price.id;
-        return plan.priceId === currentPriceId;
-      })
-    : null;
+  const currentPlan = getCurrentPlan(currentSubscription, plans);
 
-  const getStatusInfo = () => {
-    if (!currentSubscription) {
-      return {
-        label: "No Subscription",
-        color: "error" as const,
-        icon: <CancelIcon color="error" />,
-        message: "You don't have an active subscription",
-      };
-    }
-
-    if (currentSubscription.status === "active") {
-      return {
-        label: "Active",
-        color: "success" as const,
-        icon: <CheckCircleIcon color="success" />,
-        message: `Your ${currentPlan?.name} plan is active`,
-      };
-    } else if (currentSubscription.status === "trialing") {
-      return {
-        label: "Trial",
-        color: "info" as const,
-        icon: <CheckCircleIcon color="info" />,
-        message: `Your ${currentPlan?.name} trial is active`,
-      };
-    } else if (currentSubscription.status === "paused") {
-      return {
-        label: "Paused",
-        color: "warning" as const,
-        icon: <PauseIcon color="warning" />,
-        message: `Your subscription is currently paused`,
-      };
-    } else {
-      return {
-        label: "Canceled",
-        color: "error" as const,
-        icon: <CancelIcon color="error" />,
-        message: `Your subscription has been canceled`,
-      };
-    }
-  };
+  // Get subscription status information for UI display
+  const statusInfo = getSubscriptionStatusInfo(
+    currentSubscription,
+    currentPlan,
+    theme
+  );
 
   if (loading) {
     return (
@@ -96,15 +61,13 @@ const SubscriptionStatus: React.FC<SubscriptionStatusProps> = ({
     );
   }
 
-  const statusInfo = getStatusInfo();
-
   return (
     <Box
       sx={{
         p: compact ? 1 : 2,
         borderRadius: 2,
-        backgroundColor: alpha(theme.palette[statusInfo.color].main, 0.08),
-        border: `1px solid ${alpha(theme.palette[statusInfo.color].main, 0.2)}`,
+        backgroundColor: statusInfo.bgColor || theme.palette.background.paper,
+        border: `1px solid ${statusInfo.borderColor || theme.palette.divider}`,
       }}
     >
       <Stack
@@ -123,7 +86,7 @@ const SubscriptionStatus: React.FC<SubscriptionStatusProps> = ({
             >
               {statusInfo.label}
             </Typography>
-            {!compact && (
+            {!compact && statusInfo.message && (
               <Typography variant="body2" color="text.secondary">
                 {statusInfo.message}
               </Typography>
