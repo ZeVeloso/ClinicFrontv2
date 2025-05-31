@@ -1,33 +1,48 @@
 import React from "react";
-import { Snackbar, Alert } from "@mui/material";
+import {
+  Snackbar,
+  Alert,
+  AlertProps,
+  SnackbarProps,
+  Typography,
+} from "@mui/material";
+
+export type ToastSeverity = "success" | "info" | "warning" | "error";
 
 interface ToastProps {
   open: boolean;
-  message: string;
-  severity?: "success" | "error" | "warning" | "info";
+  autoHideDuration?: number;
   onClose: () => void;
+  severity: ToastSeverity;
+  message: string;
+  variant?: AlertProps["variant"];
+  anchorOrigin?: SnackbarProps["anchorOrigin"];
 }
 
 const Toast: React.FC<ToastProps> = ({
   open,
-  message,
-  severity = "info",
+  autoHideDuration = 5000,
   onClose,
+  severity,
+  message,
+  variant = "filled",
+  anchorOrigin = { vertical: "top", horizontal: "right" },
 }) => {
   return (
     <Snackbar
       open={open}
-      autoHideDuration={6000}
+      autoHideDuration={autoHideDuration}
       onClose={onClose}
-      anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      anchorOrigin={anchorOrigin}
     >
       <Alert
         onClose={onClose}
         severity={severity}
         sx={{ width: "100%" }}
-        variant="filled"
+        variant={variant}
+        elevation={6}
       >
-        {message}
+        <Typography variant="body2">{message}</Typography>
       </Alert>
     </Snackbar>
   );

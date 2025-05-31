@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -34,6 +34,7 @@ import {
 import { useSubscription } from "../hooks/useSubscription";
 import { Plan, Subscription } from "../types";
 import { formatCurrency } from "../../../utils/formatters";
+import { useToast } from "../../../contexts/ToastContext";
 
 interface SubscriptionManagerProps {
   showTitle?: boolean;
@@ -52,6 +53,28 @@ const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({
     resumeSubscription,
     hasActiveSubscription,
   } = useSubscription();
+  // Add useToast hook
+  const { showToast } = useToast();
+
+  // Add validation effect for subscription data
+  useEffect(() => {
+    // Validate subscription data when it changes
+    if (currentSubscription) {
+      if (
+        !currentSubscription.id ||
+        typeof currentSubscription.id !== "string"
+      ) {
+        console.error(
+          "Invalid subscription data detected:",
+          currentSubscription
+        );
+        showToast(
+          "Invalid subscription data detected. Please contact support.",
+          "error"
+        );
+      }
+    }
+  }, [currentSubscription, showToast]);
 
   const checkoutContainerRef = useRef<HTMLDivElement>(null);
   const [processingAction, setProcessingAction] = useState<string | null>(null);
@@ -76,6 +99,23 @@ const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({
 
   const handleSubscribe = async (plan: Plan) => {
     try {
+      // Don't allow subscription to the current plan
+      if (
+        currentSubscription &&
+        currentPlan?.priceId === plan.priceId &&
+        currentSubscription.status === "active"
+      ) {
+        showToast("You are already subscribed to this plan", "info");
+        return;
+      }
+
+      // Validate plan data before proceeding
+      if (!plan.id || !plan.priceId || !plan.name) {
+        console.error("Invalid plan data:", plan);
+        showToast("Invalid plan selected. Please try again.", "error");
+        return;
+      }
+
       setProcessingAction(plan.id);
       console.log(
         `Initiating checkout for plan: ${plan.name} (${plan.priceId})`
@@ -88,6 +128,12 @@ const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({
       await createCheckout(plan.priceId);
     } catch (error) {
       console.error("Error during checkout process:", error);
+      showToast(
+        error instanceof Error
+          ? error.message
+          : "Checkout process failed. Please try again.",
+        "error"
+      );
     } finally {
       setProcessingAction(null);
     }
@@ -96,15 +142,46 @@ const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({
   const handleCancelSubscription = () => {
     if (!currentSubscription) return;
 
+    // Validate that we have a valid subscription ID
+    if (!currentSubscription.id || typeof currentSubscription.id !== "string") {
+      console.error("Invalid subscription ID");
+      showToast(
+        "Unable to cancel subscription: Invalid subscription ID",
+        "error"
+      );
+      return;
+    }
+
+    // Prevent multiple submissions
+    if (processingAction) {
+      return;
+    }
+
+    // Format current plan information for the confirmation dialog
+    const planName = currentPlan?.name || "Unknown plan";
+    const endDate = currentSubscription.nextBilledAt
+      ? new Date(currentSubscription.nextBilledAt).toLocaleDateString()
+      : "the end of the current billing period";
+
     setConfirmDialog({
       open: true,
       title: "Cancel Subscription",
-      message:
-        "Are you sure you want to cancel your subscription? You will lose access to premium features at the end of your current billing period.",
+      message: `Are you sure you want to cancel your ${planName} subscription? You will continue to have access to premium features until ${endDate}, but your subscription will not renew after that date.`,
       action: async () => {
         setProcessingAction("cancel");
         try {
-          await cancelSubscription(currentSubscription.id);
+          const success = await cancelSubscription(currentSubscription.id);
+          if (!success) {
+            throw new Error("Failed to cancel subscription");
+          }
+        } catch (error) {
+          console.error("Error cancelling subscription:", error);
+          showToast(
+            error instanceof Error
+              ? error.message
+              : "Failed to cancel subscription. Please try again later.",
+            "error"
+          );
         } finally {
           setProcessingAction(null);
           setConfirmDialog((prev) => ({ ...prev, open: false }));
@@ -116,14 +193,49 @@ const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({
   const handleResumeSubscription = () => {
     if (!currentSubscription) return;
 
+    // Validate that we have a valid subscription ID
+    if (!currentSubscription.id || typeof currentSubscription.id !== "string") {
+      console.error("Invalid subscription ID");
+      showToast(
+        "Unable to resume subscription: Invalid subscription ID",
+        "error"
+      );
+      return;
+    }
+
+    // Prevent multiple submissions
+    if (processingAction) {
+      return;
+    }
+
+    // Get plan information for the message
+    const planName = currentPlan?.name || "subscription";
+    const planPrice = currentPlan?.unitPrice
+      ? formatCurrency(
+          parseFloat(currentPlan.unitPrice.amount) / 100,
+          currentPlan.unitPrice.currencyCode
+        )
+      : "subscription fee";
+
     setConfirmDialog({
       open: true,
       title: "Resume Subscription",
-      message: "Are you sure you want to resume your subscription?",
+      message: `Are you sure you want to resume your ${planName} subscription? You will be charged ${planPrice}/${currentPlan?.interval || "period"} and will have immediate access to all premium features.`,
       action: async () => {
         setProcessingAction("resume");
         try {
-          await resumeSubscription(currentSubscription.id);
+          const success = await resumeSubscription(currentSubscription.id);
+          if (!success) {
+            throw new Error("Failed to resume subscription");
+          }
+        } catch (error) {
+          console.error("Error resuming subscription:", error);
+          showToast(
+            error instanceof Error
+              ? error.message
+              : "Failed to resume subscription. Please try again later.",
+            "error"
+          );
         } finally {
           setProcessingAction(null);
           setConfirmDialog((prev) => ({ ...prev, open: false }));
@@ -548,10 +660,22 @@ const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({
                               : "inherit",
                           }}
                         >
-                          {formatCurrency(
-                            parseFloat(plan.unitPrice.amount) / 100,
-                            plan.unitPrice.currencyCode
-                          )}
+                          {/* Add safety check to ensure price value is valid */}
+                          {(() => {
+                            try {
+                              const amount = parseFloat(plan.unitPrice.amount);
+                              if (isNaN(amount) || amount < 0) {
+                                return "Invalid price";
+                              }
+                              return formatCurrency(
+                                amount / 100,
+                                plan.unitPrice.currencyCode
+                              );
+                            } catch (e) {
+                              console.error("Error displaying price:", e);
+                              return "Error displaying price";
+                            }
+                          })()}
                         </Typography>
                         <Typography variant="subtitle1" color="text.secondary">
                           /{plan.interval}
