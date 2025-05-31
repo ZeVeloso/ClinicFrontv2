@@ -2,9 +2,11 @@ import React, { lazy, Suspense } from "react";
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import SubscriptionProtectedRoute from "@features/subscription/components/SubscriptionProtectedRoute";
+import { SubscriptionProvider } from "@features/subscription/providers/SubscriptionProvider";
 //import Navbar from "./components/navigation/NavBar";
-import SignupPage from "./pages/SignupPage";
-import LoginPage from "./pages/LoginPage";
+import SignupPage from "@features/auth/pages/SignupPage";
+import LoginPage from "@features/auth/pages/LoginPage";
 
 import RouteErrorBoundary from "./components/RouteErrorBoundary";
 import theme from "./theme";
@@ -12,25 +14,50 @@ import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 
 import MainLayout from "./components/layout/MainLayout";
-import AppointmentPage from "./pages/AppointmentPage";
-import LandingPage from "./pages/LandingPage";
-//import Box from "@mui/material/Box";
-// Protected layout updated to use MUI styling
-// Updated ProtectedLayout component
 
-const DashboardPage = lazy(() => import("./pages/DashboardPage"));
-const PatientsPage = lazy(() => import("./pages/PatientsPage"));
-const PatientPage = lazy(() => import("./pages/PatientPage"));
-const AppointmentsPage = lazy(() => import("./pages/AppointmentsPage"));
-const ManagementPage = lazy(() => import("./pages/ManagementPage"));
+import AppointmentPage from "@features/appointments/pages/AppointmentPage";
+const AppointmentsPage = lazy(
+  () => import("@features/appointments/pages/AppointmentsPage")
+);
 
+import LandingPage from "@/features/profile/pages/LandingPage";
+
+import ForgotPasswordPage from "@features/auth/pages/ForgotPasswordPage";
+import ResetPasswordPage from "@features/auth/pages//ResetPasswordPage";
+
+const DashboardPage = lazy(
+  () => import("@/features/dashboard/pages/DashboardPage")
+);
+
+const PatientsPage = lazy(
+  () => import("@features/patients/pages/PatientsPage")
+);
+const PatientPage = lazy(() => import("@features/patients/pages/PatientPage"));
+
+const ManagementPage = lazy(
+  () => import("@features/management/pages/ManagementPage")
+);
+const SettingsPage = lazy(
+  () => import("@/features/profile/pages/SettingsPage")
+);
+
+const CheckoutSuccessPage = lazy(
+  () => import("@features/subscription/pages/CheckoutSuccessPage")
+);
+const SubscriptionPage = lazy(
+  () => import("@features/subscription/pages/SubscriptionPage")
+);
+
+// Basic protected app (auth only)
 const ProtectedApp: React.FC = () => (
   <ProtectedRoute>
-    <MainLayout>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Outlet />
-      </Suspense>
-    </MainLayout>
+    <SubscriptionProvider>
+      <MainLayout>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Outlet />
+        </Suspense>
+      </MainLayout>
+    </SubscriptionProvider>
   </ProtectedRoute>
 );
 
@@ -52,27 +79,69 @@ const router = createBrowserRouter([
       },
       {
         path: "dashboard",
-        element: <DashboardPage />,
+        element: (
+          <SubscriptionProtectedRoute>
+            <DashboardPage />
+          </SubscriptionProtectedRoute>
+        ),
       },
       {
         path: "patients",
-        element: <PatientsPage />,
+        element: (
+          <SubscriptionProtectedRoute requiredFeatures={["patient-management"]}>
+            <PatientsPage />
+          </SubscriptionProtectedRoute>
+        ),
       },
       {
         path: "appointments",
-        element: <AppointmentsPage />,
+        element: (
+          <SubscriptionProtectedRoute
+            requiredFeatures={["appointment-scheduling"]}
+          >
+            <AppointmentsPage />
+          </SubscriptionProtectedRoute>
+        ),
       },
       {
         path: "patients/:id",
-        element: <PatientPage />,
+        element: (
+          <SubscriptionProtectedRoute requiredFeatures={["patient-management"]}>
+            <PatientPage />
+          </SubscriptionProtectedRoute>
+        ),
       },
       {
         path: "appointments/:id",
-        element: <AppointmentPage />,
+        element: (
+          <SubscriptionProtectedRoute
+            requiredFeatures={["appointment-scheduling"]}
+          >
+            <AppointmentPage />
+          </SubscriptionProtectedRoute>
+        ),
       },
       {
         path: "management",
-        element: <ManagementPage />,
+        element: (
+          <SubscriptionProtectedRoute
+            requiredFeatures={["analytics-dashboard"]}
+          >
+            <ManagementPage />
+          </SubscriptionProtectedRoute>
+        ),
+      },
+      {
+        path: "settings",
+        element: <SettingsPage />,
+      },
+      {
+        path: "settings/subscription",
+        element: <SubscriptionPage />,
+      },
+      {
+        path: "checkout/success",
+        element: <CheckoutSuccessPage />,
       },
     ],
   },
@@ -84,6 +153,16 @@ const router = createBrowserRouter([
   {
     path: "/signup",
     element: <SignupPage />,
+    errorElement: <RouteErrorBoundary />,
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPasswordPage />,
+    errorElement: <RouteErrorBoundary />,
+  },
+  {
+    path: "/reset-password",
+    element: <ResetPasswordPage />,
     errorElement: <RouteErrorBoundary />,
   },
   {

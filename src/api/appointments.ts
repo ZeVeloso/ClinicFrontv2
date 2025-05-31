@@ -38,14 +38,19 @@ export const createAppointment = async (
   return response.data.data;
 };
 
+export const createAppointment2 = async (appointmentData: Appointment) => {
+  const response = await axiosInstance.post(`/appointments`, appointmentData);
+  return response.data.data;
+};
+
 export const updateAppointment = async (
   id: string,
   updatedAppointment: Appointment
 ) => {
   const { patient, ...appointmentData } = updatedAppointment;
-  const response = await axiosInstance.put(
-    `/appointments/${id}`,
-    appointmentData
-  );
+  const response = await axiosInstance.put(`/appointments/${id}`, {
+    patientId: patient?.id,
+    ...appointmentData,
+  });
   return response.data;
 };

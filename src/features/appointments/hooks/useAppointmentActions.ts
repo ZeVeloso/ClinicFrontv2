@@ -1,16 +1,16 @@
 import { useCallback } from "react";
 import {
   createAppointment,
+  createAppointment2,
   updateAppointment,
 } from "../../../api/appointments";
 import { Appointment } from "../types";
-import { useNavigate } from "react-router-dom";
-
+//import { useNavigate } from "react-router-dom";
 export const useAppointmentActions = (
   appointments: Appointment[],
   setAppointments: React.Dispatch<React.SetStateAction<Appointment[]>>
 ) => {
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
   const addAppointment = useCallback(
     async (appointmentData: any) => {
@@ -28,8 +28,22 @@ export const useAppointmentActions = (
     [setAppointments]
   );
 
+  const addAppointment2 = useCallback(
+    async (appointmentData: any) => {
+      try {
+        const newAppointment = await createAppointment2(appointmentData);
+        // Update the local state by appending the new appointment
+        setAppointments((prev) => [...prev, newAppointment]);
+      } catch (err) {
+        throw new Error("Error creating appointment. Please try again.");
+      }
+    },
+    [setAppointments]
+  );
+
   const editAppointment = (appointmentData: any) => {
-    navigate(`/appointments/${appointmentData.id}`);
+    updateAppointment(appointmentData.id, appointmentData);
+    //navigate(`/appointments/${appointmentData.id}`);
   };
 
   const toggleAppointmentStatus = useCallback(
@@ -84,6 +98,7 @@ export const useAppointmentActions = (
 
   return {
     addAppointment,
+    addAppointment2,
     editAppointment,
     toggleAppointmentStatus,
     cancelAppointment,
