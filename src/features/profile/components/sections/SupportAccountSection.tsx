@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  Stack,
   Button,
   Typography,
   Box,
@@ -8,12 +7,9 @@ import {
   alpha,
   Grid,
   Paper,
-  Divider,
 } from "@mui/material";
 import {
-  Support as SupportIcon,
   DeleteForever as DeleteIcon,
-  HelpOutline as HelpIcon,
   SupportAgent as AgentIcon,
   ContentPaste as DocumentIcon,
   Forum as ForumIcon,

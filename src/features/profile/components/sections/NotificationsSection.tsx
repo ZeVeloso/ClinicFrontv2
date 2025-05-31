@@ -2,22 +2,17 @@ import React from "react";
 import {
   Stack,
   Switch,
-  FormControlLabel,
   FormGroup,
   Typography,
   Box,
   useTheme,
   alpha,
   Paper,
-  Grid,
   Divider,
-  Card,
   Chip,
-  Badge,
   Tooltip,
 } from "@mui/material";
 import {
-  Notifications as NotificationsIcon,
   Email as EmailIcon,
   Sms as SmsIcon,
   AppSettingsAlt as AppIcon,
